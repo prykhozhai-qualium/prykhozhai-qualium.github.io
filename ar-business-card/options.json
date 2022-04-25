@@ -1,5 +1,5 @@
 {
   "gltf": "./assets/Object.gltf",
-  "target": "./assets/targets.mind",
+  "target": ".assets/targets.mind/",
   "contacts": ["./assets/contacts/contact-1.vcf", "./assets/contacts/contact-2.vcf"]
 }
