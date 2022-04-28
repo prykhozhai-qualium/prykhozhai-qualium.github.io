@@ -1,1 +1,0 @@
-# -prykhozhai-qualium.github.io
