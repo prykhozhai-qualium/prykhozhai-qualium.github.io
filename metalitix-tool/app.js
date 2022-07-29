@@ -31599,7 +31599,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const assets = {
     // target: 'https://cdn.glitch.global/78c65e45-83d9-4827-b861-b3709f7b2e7c/lush.glb?v=1649681515587',
-    target: './example.gltf'
+    target: './example.glb'
 };
 const template = (camera) => {
     return `
