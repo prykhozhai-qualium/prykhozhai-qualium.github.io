@@ -31606,6 +31606,7 @@ const template = (state) => {
   <a-scene vr-mode-ui='enabled: false' renderer='antialias: false'
     loading-screen='dotsColor: white; backgroundColor: black'>
     <a-sky color="#000"></a-sky>
+    <a-entity light="type: ambient; color: #FFFFFF; intensity: 5"></a-entity>
     <a-assets>
       <a-asset-item 
         crossorigin='anonymous'
