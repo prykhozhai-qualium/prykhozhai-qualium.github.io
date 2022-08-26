@@ -21,7 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\n  background: #040d21;\n  margin: 0;\n  color: #627597;\n  height: 100vh;\n  display: flex;\n}\n\n#root {\n  margin: auto;\n  width: min(80vw, 80vh);\n  height: min(80vw, 80vh);\n}\n\ntextarea {\n  width: 100%;\n  height: 100px;\n}\n\ninput {\n  font-size: 1.2rem;\n  color: #040d21;\n  background: #627597;\n  border-color: #627597;\n  margin-top: 1rem;\n}", "",{"version":3,"sources":["webpack://./src/style.sass"],"names":[],"mappings":"AAGA;EACE,mBAHS;EAIT,SAAA;EACA,cANU;EAOV,aAAA;EACA,aAAA;AAFF;;AAIA;EACE,YAAA;EACA,sBAAA;EACA,uBAAA;AADF;;AAGA;EACE,WAAA;EACA,aAAA;AAAF;;AAEA;EACE,iBAAA;EACA,cApBS;EAqBT,mBAtBU;EAuBV,qBAvBU;EAwBV,gBAAA;AACF","sourcesContent":["$lightblue: #627597\r\n$darkblue: #040d21\r\n\r\nbody\r\n  background: $darkblue\r\n  margin: 0\r\n  color: $lightblue\r\n  height: 100vh\r\n  display: flex\r\n\r\n#root\r\n  margin: auto\r\n  width: min(80vw, 80vh)\r\n  height: min(80vw, 80vh)\r\n\r\ntextarea\r\n  width: 100%\r\n  height: 100px\r\n\r\ninput\r\n  font-size: 1.2rem\r\n  color: $darkblue\r\n  background: $lightblue\r\n  border-color: $lightblue\r\n  margin-top: 1rem"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body {\n  background: #040d21;\n  margin: 0;\n  color: #627597;\n  height: 100vh;\n  display: flex;\n}\n\n#root {\n  margin: auto;\n  width: min(80vw, 80vh);\n  height: min(80vw, 80vh);\n}\n\ntextarea {\n  width: 100%;\n  height: 100px;\n}\n\ninput {\n  font-size: 1.2rem;\n  color: #040d21;\n  background: #627597;\n  border-color: #627597;\n  margin-top: 1rem;\n}", "",{"version":3,"sources":["webpack://./src/style.sass"],"names":[],"mappings":"AAGA;EACE,mBAHS;EAIT,SAAA;EACA,cANU;EAOV,aAAA;EACA,aAAA;AAFF;;AAIA;EACE,YAAA;EACA,sBAAA;EACA,uBAAA;AADF;;AAGA;EACE,WAAA;EACA,aAAA;AAAF;;AAEA;EACE,iBAAA;EACA,cApBS;EAqBT,mBAtBU;EAuBV,qBAvBU;EAwBV,gBAAA;AACF","sourcesContent":["$lightblue: #627597\n$darkblue: #040d21\n\nbody\n  background: $darkblue\n  margin: 0\n  color: $lightblue\n  height: 100vh\n  display: flex\n\n#root\n  margin: auto\n  width: min(80vw, 80vh)\n  height: min(80vw, 80vh)\n\ntextarea\n  width: 100%\n  height: 100px\n\ninput\n  font-size: 1.2rem\n  color: $darkblue\n  background: $lightblue\n  border-color: $lightblue\n  margin-top: 1rem"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -31599,9 +31599,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const assets = {
     // target: 'https://cdn.glitch.global/78c65e45-83d9-4827-b861-b3709f7b2e7c/lush.glb?v=1649681515587',
-    target: './example.glb'
+    target: '/phone.gltf'
 };
-const template = (camera) => {
+const template = (state) => {
     return `
   <a-scene vr-mode-ui='enabled: false' renderer='antialias: false'
     loading-screen='dotsColor: white; backgroundColor: black'>
@@ -31611,15 +31611,14 @@ const template = (camera) => {
         crossorigin='anonymous'
         response-type='arraybuffer'
         id='target_model'
-        src='${assets.target}' />
+        src='${state.path}' />
     </a-assets>
     <a-entity id='heatmap'>
-      <a-entity id='target' gltf-model='#target_model' position='0 0 0' transparent='true'></a-entity>
+      <a-entity id='target' gltf-model='#target_model'></a-entity>
     </a-entity>
-    <a-camera metalitix-logger="appkey: ${camera}" wasd-controls="acceleration:40;adAxis:y;"></a-camera>
+    <a-camera look-controls wasd-controls="adAxis: y;acceleration:100;"  position="10 10 10" metalitix-logger="appkey: ${state.key}"></a-camera>
   </a-scene>`;
-}; // 6582f3de-4b62-4d2f-87cd-958465f0860a
-// <a-camera metalitix-logger="appkey: 0c910899-9aff-4808-8991-f36d49461fcd" wasd-controls="acceleration:1;adAxis:y;"></a-camera>
+};
 
 
 /***/ }),
@@ -31643,8 +31642,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const HeatMapScene = () => {
-    const [state, setState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
-    return (!state ?
+    const [state, setState] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({
+        path: '',
+        key: '',
+    });
+    return (!state.path.length && !state.key.length ?
         (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_setup_form__WEBPACK_IMPORTED_MODULE_3__.SetupForm, { submit: setState }) :
         (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { dangerouslySetInnerHTML: { __html: (0,_ascene_template__WEBPACK_IMPORTED_MODULE_2__.template)(state) } }));
 };
@@ -31668,14 +31670,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const SetupForm = ({ submit }) => {
-    const [data, setData] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+    const [key, setKey] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+    const [file, setFile] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)({});
     const handle = (e) => {
         e.preventDefault();
-        if (!data)
+        if (!key)
             return;
-        submit(data);
+        submit({
+            key: key,
+            path: file
+        });
     };
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", Object.assign({ className: "tooltip" }, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("ul", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: "W - Forward" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: "S - Back" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: "D - UP" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: "A - Down" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("a", Object.assign({ href: "./example.gltf", download: './example.gltf' }, { children: "Download example model" })) })] }) })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("form", Object.assign({ onSubmit: handle }, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", Object.assign({ htmlFor: "data" }, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Enter key:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("textarea", { placeholder: 'f4600789-38e7-4d16-a7c4-26a47fc7de7a', name: "data", value: data, onChange: (e) => setData(e.target.value) })] })) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: "submit", value: "run demo" }) })] }))] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("form", Object.assign({ onSubmit: handle }, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", Object.assign({ htmlFor: 'key' }, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "AFrame Component Code Snippet:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("textarea", { placeholder: 'f4600789-38e7-4d16-a7c4-26a47fc7de7a', name: 'key', value: key, onChange: e => setKey(e.target.value) })] })), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("label", Object.assign({ htmlFor: 'file' }, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "GLB:" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'file', multiple: false, onChange: e => {
+                                        setFile(e.target && e.target.files ? URL.createObjectURL(e.target.files[0]) : '');
+                                    } })] }))] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("input", { type: 'submit', value: 'run demo' }) })] })) }));
 };
 
 
@@ -31878,7 +31886,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-react_dom__WEBPACK_IMPORTED_MODULE_3__.render((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_ascene__WEBPACK_IMPORTED_MODULE_4__["default"], {}) }), document.getElementById('root'));
+react_dom__WEBPACK_IMPORTED_MODULE_3__.render((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_ascene__WEBPACK_IMPORTED_MODULE_4__["default"], {}), document.getElementById('root'));
 
 })();
 
