@@ -82103,60 +82103,74 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 
 
+
+const MetalitixLoggerState = {
+  speed: 0,
+  prev_position: new three__WEBPACK_IMPORTED_MODULE_0__.Vector3(),
+  const: {
+    INTERVAL: 500,
+  }
+};
+
 const MetalitixLogger = {
-    schema: {
-      interval: { default: 500 },
-      appkey: { default: 'test-appkey-1234-qwertyuiop' },
-    },
-    init() {
-       console.log('metalitix-logger 2.0 running'),
-       this.poll = this.poll.bind(this)
-       this.startPolling = this.startPolling.bind(this)
-       this.stopPolling = this.stopPolling.bind(this)
-       this.nextPoll = void 0
-       this.worldPosition = new three__WEBPACK_IMPORTED_MODULE_0__.Vector3()
-       this.worldDirection = new three__WEBPACK_IMPORTED_MODULE_0__.Vector3()
-       this.uuid = three__WEBPACK_IMPORTED_MODULE_0__.MathUtils.generateUUID()
-    },
-    play() {
-      this.startPolling()
-    },
-    remove() {
-      this.stopPolling()
-    },
-    startPolling() {
-      const { interval: t } = this.data
-      this.nextPoll = setTimeout(this.poll, t)
-    },
-    stopPolling() {
-      clearTimeout(this.nextPoll)
-    },
-    poll() {
-       const {
-          el: { object3D: t },
-          data: { interval: i, appkey: e },
-          worldPosition: o,
-          worldDirection: l,
-          uuid: n
-          } = this
-       const s = t.getWorldPosition(o)
-       const r = t.children[0].getWorldDirection(l)
-       const a = {
-          appkey: e,
-          sessionId: n,
-          timestamp: Date.now(),
-          position: { x: s.x, y: s.y, z: s.z },
-          direction: { x: r.x, y: r.y, z: r.z }
-       }
-       console.log('poll', a)
-       fetch('https://metalitix-dev.aircards.io/api/v1/xr-analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(a)
-       })
-       this.nextPoll = setTimeout(this.poll, i)
-    }
-}
+  schema: {
+    interval: { default: MetalitixLoggerState.const.INTERVAL },
+    appkey: { default: 'test-appkey-1234-qwertyuiop' }
+  },
+  init() {
+    console.log('metalitix-logger 2.0 running'), (this.poll = this.poll.bind(this));
+    this.startPolling = this.startPolling.bind(this);
+    this.stopPolling = this.stopPolling.bind(this);
+    this.nextPoll = void 0;
+    this.worldPosition = new three__WEBPACK_IMPORTED_MODULE_0__.Vector3();
+    this.worldDirection = new three__WEBPACK_IMPORTED_MODULE_0__.Vector3();
+    this.uuid = three__WEBPACK_IMPORTED_MODULE_0__.MathUtils.generateUUID();
+  },
+  play() {
+    this.startPolling();
+  },
+  remove() {
+    this.stopPolling();
+  },
+  startPolling() {
+    const { interval: t } = this.data;
+    this.nextPoll = setTimeout(this.poll, t);
+  },
+  stopPolling() {
+    clearTimeout(this.nextPoll);
+  },
+  poll() {
+    const {
+      el: { object3D: t },
+      data: { interval: i, appkey: e },
+      worldPosition: o,
+      worldDirection: l,
+      uuid: n
+    } = this;
+    const s = t.getWorldPosition(o);
+    const r = t.children[0].getWorldDirection(l);
+
+    let distance = new three__WEBPACK_IMPORTED_MODULE_0__.Vector3(s.x, s.y, s.z).distanceTo(MetalitixLoggerState.prev_position);
+
+    MetalitixLoggerState.prev_position.set(s.x, s.y, s.z);
+
+    const a = {
+      appkey: e,
+      sessionId: n,
+      timestamp: Date.now(),
+      position: { x: s.x, y: s.y, z: s.z },
+      direction: { x: r.x, y: r.y, z: r.z },
+      speed: distance / (MetalitixLoggerState.const.INTERVAL / 1000),
+    };
+    console.log('poll', a);
+    fetch('https://metalitix-dev.aircards.io/api/v1/xr-analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(a)
+    });
+    this.nextPoll = setTimeout(this.poll, i);
+  }
+};
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MetalitixLogger);
 
 
