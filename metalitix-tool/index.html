@@ -176,6 +176,7 @@
           model = gltf.scene;
           GLTF = gltf;
           scene.add(model);
+          if(gltf.animations.length)
           currentBaseAction = gltf.animations[0].name;
 
           gltf.animations.forEach((anim, i) => {
@@ -257,47 +258,48 @@
 
         const baseNames = ["None", ...Object.keys(baseActions)];
 
-        for (let i = 0, l = baseNames.length; i !== l; ++i) {
-          const name = baseNames[i];
-          const settings = baseActions[name];
-          panelSettings[name] = function () {
-            const currentSettings = baseActions[currentBaseAction];
-            let start = currentSettings ? currentSettings.action : null;
-            currentAction = settings ? settings.action : null;
+        if (gltf.animations && gltf.animations.length)
+          for (let i = 0, l = baseNames.length; i !== l; ++i) {
+            const name = baseNames[i];
+            const settings = baseActions[name];
+            panelSettings[name] = function () {
+              const currentSettings = baseActions[currentBaseAction];
+              let start = currentSettings ? currentSettings.action : null;
+              currentAction = settings ? settings.action : null;
 
-            if (start !== currentAction) {
-              prepareCrossFade(start, currentAction, 0.35);
-            }
-          };
-
-          crossFadeControls.push(folder1.add(panelSettings, name));
-
-          if (name != "None") {
-            panelSettings[name + " time"] = 0;
-            let controller = folder1.add(
-              panelSettings,
-              name + " time",
-              0,
-              1,
-              0.01
-            );
-
-            controller.onChange((e) => {
-              if (currentAction && currentAction.getClip().name == name) {
-                currentAction.time = e * currentAction.getClip().duration;
-                panelSettings[name + " time"] = e;
+              if (start !== currentAction) {
+                prepareCrossFade(start, currentAction, 0.35);
               }
-            });
-
-            let check = () => {
-              controller.updateDisplay();
-
-              window.requestAnimationFrame(check);
             };
 
-            check();
+            crossFadeControls.push(folder1.add(panelSettings, name));
+
+            if (name != "None") {
+              panelSettings[name + " time"] = 0;
+              let controller = folder1.add(
+                panelSettings,
+                name + " time",
+                0,
+                1,
+                0.01
+              );
+
+              controller.onChange((e) => {
+                if (currentAction && currentAction.getClip().name == name) {
+                  currentAction.time = e * currentAction.getClip().duration;
+                  panelSettings[name + " time"] = e;
+                }
+              });
+
+              let check = () => {
+                controller.updateDisplay();
+
+                window.requestAnimationFrame(check);
+              };
+
+              check();
+            }
           }
-        }
 
         folder2.add(panelSettings, "ApiKey");
         folder2.add(panelSettings, "Direct", [
