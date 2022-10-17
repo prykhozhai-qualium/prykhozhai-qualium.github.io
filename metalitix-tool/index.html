@@ -176,8 +176,8 @@
           model = gltf.scene;
           GLTF = gltf;
           scene.add(model);
-          if(gltf.animations.length)
-          currentBaseAction = gltf.animations[0].name;
+          if (GLTF.animations.length)
+            currentBaseAction = gltf.animations[0].name;
 
           gltf.animations.forEach((anim, i) => {
             baseActions[anim.name] = {
@@ -254,11 +254,12 @@
           "modify time scale": 1.0,
           Direct: "https://metalitix-dev.aircards.io/",
           ApiKey: "",
+          Loop: true,
         };
 
         const baseNames = ["None", ...Object.keys(baseActions)];
 
-        if (gltf.animations && gltf.animations.length)
+        if (GLTF.animations && GLTF.animations.length)
           for (let i = 0, l = baseNames.length; i !== l; ++i) {
             const name = baseNames[i];
             const settings = baseActions[name];
@@ -271,6 +272,10 @@
                 prepareCrossFade(start, currentAction, 0.35);
               }
             };
+
+            window.requestAnimationFrame(() => {
+              if (i === 0) panelSettings[name]();
+            })
 
             crossFadeControls.push(folder1.add(panelSettings, name));
 
@@ -307,6 +312,7 @@
           "https://metalitix-staging.aircards.io/",
           "https://app.metalitix.com/",
         ]);
+        folder2.add(panelSettings, "Loop");
 
         // for ( const name of Object.keys( additiveActions ) ) {
 
@@ -470,7 +476,7 @@
           animation_state.animations = [
             {
               name: currentAction.getClip().name,
-              loop: currentAction.loop,
+              loop: panelSettings.Loop ? true : "",
               progress: currentAction.time / currentAction.getClip().duration,
             },
           ];
