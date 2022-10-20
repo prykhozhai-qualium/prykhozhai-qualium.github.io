@@ -263,8 +263,7 @@
 
         const folder2 = panel.addFolder("LoggerData");
         const folder1 = panel.addFolder("Base Actions");
-        const folder3 = panel.addFolder("General Speed");
-        const folder4 = panel.addFolder("Additional");
+        const folder4 = panel.addFolder("Camera");
 
         panelSettings = {
           "modify time scale": 1.0,
@@ -277,6 +276,10 @@
         };
 
         const baseNames = ["None", ...Object.keys(baseActions)];
+
+        folder1
+          .add(panelSettings, "modify time scale", 0.0, 5, 0.01)
+          .onChange(modifyTimeScale);
 
         if (GLTF.animations && GLTF.animations.length)
           for (let i = 0, l = baseNames.length; i !== l; ++i) {
@@ -296,7 +299,7 @@
               if (i === 0) panelSettings[name]();
             });
 
-            crossFadeControls.push(folder1.add(panelSettings, name).name(name.substr(0, 20)));
+            crossFadeControls.push(folder1.add(panelSettings, name).name(name.substr(0, 21)));
 
             if (name != "None") {
               panelSettings[name + " time"] = 0;
@@ -306,7 +309,7 @@
                 0,
                 1,
                 0.01
-              );
+              ).name(("Time: " + name).substr(0, 15));
 
               controller.onChange((e) => {
                 if (currentAction && currentAction.getClip().name == name) {
@@ -332,7 +335,7 @@
           "https://metalitix-staging.aircards.io/",
           "https://app.metalitix.com/",
         ]);
-        folder2.add(panelSettings, "Loop");
+        folder2.add(panelSettings, "Loop").name("Is animation loop on");
         folder4.add(panelSettings, "Show camera vectors & positions");
         folder4
           .add(panelSettings, "Camera controls", ["Orbit", "Mouse"])
@@ -362,13 +365,8 @@
 
         // }
 
-        folder3
-          .add(panelSettings, "modify time scale", 0.0, 5, 0.01)
-          .onChange(modifyTimeScale);
-
         folder1.open();
         // folder2.open();
-        folder3.open();
 
         crossFadeControls.forEach(function (control) {
           control.setInactive = function () {
