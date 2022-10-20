@@ -64,7 +64,12 @@
       import Stats from "three/addons/libs/stats.module.js";
       import { GUI } from "three/addons/libs/lil-gui.module.min.js";
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.js";
       import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+      const clock = new THREE.Clock();
+      let first_person_controls;
+      let controls;
 
       let animation_state = {
         animations: [],
@@ -105,7 +110,7 @@
       };
 
       let scene, renderer, camera, stats;
-      let model, skeleton, mixer, clock;
+      let model, skeleton, mixer;
       let panelSettings, numAnimations, currentAction, GLTF;
 
       let Sync = () => {
@@ -121,8 +126,6 @@
         poll(camera, panelSettings.Direct, panelSettings.ApiKey);
       };
 
-      setInterval(Sync, i);
-
       const crossFadeControls = [];
 
       let currentBaseAction = "";
@@ -133,8 +136,6 @@
 
       function init() {
         const container = document.getElementById("container");
-        clock = new THREE.Clock();
-
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xa0a0a0);
         scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
@@ -151,7 +152,7 @@
         dirLight.shadow.camera.left = -2;
         dirLight.shadow.camera.right = 2;
         dirLight.shadow.camera.near = 0.1;
-        dirLight.shadow.camera.far = 40;
+        dirLight.shadow.camera.far = 100;
         scene.add(dirLight);
 
         // ground
@@ -231,11 +232,25 @@
         );
         camera.position.set(-1, 2, 3);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
+        // Orbit
+
+        controls = new OrbitControls(camera, renderer.domElement);
         controls.enablePan = true;
         controls.enableZoom = true;
         controls.target.set(0, 1, 0);
         controls.update();
+
+        /// Fly
+
+        first_person_controls = new FirstPersonControls(
+          camera,
+          renderer.domElement
+        );
+
+        first_person_controls.movementSpeed = 10;
+        first_person_controls.domElement = renderer.domElement;
+        first_person_controls.lookSpeed = 0.1;
+        first_person_controls.enabled = false;
 
         stats = new Stats();
         container.appendChild(stats.dom);
@@ -249,12 +264,16 @@
         const folder2 = panel.addFolder("LoggerData");
         const folder1 = panel.addFolder("Base Actions");
         const folder3 = panel.addFolder("General Speed");
+        const folder4 = panel.addFolder("Additional");
 
         panelSettings = {
           "modify time scale": 1.0,
           Direct: "https://metalitix-dev.aircards.io/",
           ApiKey: "",
+          updateSpeed: 500,
           Loop: true,
+          "Show camera vectors & positions": false,
+          "Camera controls": "Orbit",
         };
 
         const baseNames = ["None", ...Object.keys(baseActions)];
@@ -275,9 +294,9 @@
 
             window.requestAnimationFrame(() => {
               if (i === 0) panelSettings[name]();
-            })
+            });
 
-            crossFadeControls.push(folder1.add(panelSettings, name));
+            crossFadeControls.push(folder1.add(panelSettings, name).name(name.substr(0, 20)));
 
             if (name != "None") {
               panelSettings[name + " time"] = 0;
@@ -307,12 +326,27 @@
           }
 
         folder2.add(panelSettings, "ApiKey");
+        folder2.add(panelSettings, "updateSpeed", 100, 5000).name("Update speed (ms)");
         folder2.add(panelSettings, "Direct", [
           "https://metalitix-dev.aircards.io/",
           "https://metalitix-staging.aircards.io/",
           "https://app.metalitix.com/",
         ]);
         folder2.add(panelSettings, "Loop");
+        folder4.add(panelSettings, "Show camera vectors & positions");
+        folder4
+          .add(panelSettings, "Camera controls", ["Orbit", "Mouse"])
+          .onChange((value) => {
+            if(controls && first_person_controls && value == "Orbit"){
+              controls.enabled = true;
+              first_person_controls.enabled = false;
+            }
+
+            if(controls && first_person_controls && value == "Mouse"){
+              controls.enabled = false;
+              first_person_controls.enabled = true;
+            }
+          });
 
         // for ( const name of Object.keys( additiveActions ) ) {
 
@@ -351,6 +385,16 @@
             control.setInactive();
           }
         });
+
+        let startSync = () => {
+          setTimeout(() => {
+            console.log("Sync now!")
+            Sync();
+            startSync();
+          }, panelSettings.updateSpeed)
+        } 
+
+        startSync()
       }
 
       function activateAction(action) {
@@ -451,7 +495,31 @@
       }
 
       function animate() {
+        if (first_person_controls && first_person_controls.enabled)
+          first_person_controls.update(clock.getDelta());
         // Render loop
+
+        if (panelSettings["Show camera vectors & positions"]) {
+          camera.updateProjectionMatrix();
+          camera.getWorldPosition(s);
+          camera.getWorldQuaternion(q);
+          r.setFromQuaternion(q);
+
+          const dir = new THREE.Vector3(0, 0, -1).applyEuler(
+            new THREE.Euler(r.x, r.y, r.z)
+          );
+          // dir.applyEuler()
+
+          //normalize the direction vector (convert to vector of length 1)
+          dir.normalize();
+
+          const origin = s;
+          const length = 0.5;
+          const hex = 0xff0000;
+
+          const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+          scene.add(arrowHelper);
+        }
 
         requestAnimationFrame(animate);
 
