@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>three.js webgl - additive animation - skinning</title>
+    <title>
+      three.js webgl - additive animation -
+      skinning
+    </title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <link type="text/css" rel="stylesheet" href="main.css" />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="main.css"
+    />
     <style>
       a {
         color: blue;
@@ -56,9 +63,33 @@
       }
     </script>
 
+    <script src="/dist/dev/mtx-poll-three-js.js"></script>
+
+    <script>
+      window.MetalitixLoggerDev =
+        window.MetalitixLogger;
+    </script>
+
+    <script src="/dist/mtx-poll-three-js.js"></script>
+
+    <script>
+      window.MetalitixLoggerProd =
+        window.MetalitixLogger;
+    </script>
+
+    <script>
+      console.log(
+        new MetalitixLoggerDev(),
+        new MetalitixLoggerProd()
+      );
+    </script>
+
     <script type="module">
-      import { generateUUID } from "three/src/math/MathUtils";
-      import { Vector3, Euler, Quaternion } from "three";
+      import {
+        Vector3,
+        Euler,
+        Quaternion,
+      } from "three";
       import * as THREE from "three";
 
       import Stats from "three/addons/libs/stats.module.js";
@@ -75,55 +106,69 @@
         animations: [],
       };
 
+      let loggers = {
+        dev: false,
+        prod: false,
+      };
+
       const i = 200; // Polling interval
       const s = new Vector3();
       const r = new Vector3();
       const q = new Quaternion();
-      const n = generateUUID();
 
-      const poll = (object3D, direct, appKey) => {
-        object3D.updateProjectionMatrix();
-        object3D.getWorldPosition(s);
-        object3D.getWorldDirection(r);
+      const CreateLogger = (
+        object3D,
+        direct,
+        appKey
+      ) => {
+        let data;
 
-        console.log(animation_state.animations);
+        if (!loggers.dev && !loggers.prod) {
+          data = {
+            pollInterval:
+              panelSettings.updateSpeed,
+            apiVersion: "v2",
+            userMeta: {
+              sceneName: "Scene name",
+              gameLocation: "Game location name",
+              params: {
+                additionalField:
+                  "Any additional information",
+                // more fields ...
+              },
+            },
+          };
+        }
 
-        const DATA = {
-          appkey: appKey,
-          sessionId: n,
-          timestamp: Date.now(),
-          position: { x: s.x, y: s.y, z: s.z },
-          direction: { x: r.x, y: r.y, z: r.z },
-          animations: animation_state.animations,
-        };
+        if (
+          panelSettings.Direct == "dev" &&
+          !loggers.dev
+        ) {
+          loggers.dev = new MetalitixLoggerDev(
+            panelSettings.ApiKey,
+            data
+          );
 
-        console.log(DATA);
-
-        fetch(`${direct}api/v1/xr-analytics`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(DATA),
-        });
-
+          loggers.dev.startSession(object3D);
+        } else if (
+          panelSettings.Direct == "prod" &&
+          !loggers.prod
+        ) {
+          loggers.prod = new MetalitixLoggerDev(
+            panelSettings.ApiKey,
+            data
+          );
+          loggers.prod.startSession(object3D);
+        }
         animation_state.animations = [];
       };
 
       let scene, renderer, camera, stats;
       let model, skeleton, mixer;
-      let panelSettings, numAnimations, currentAction, GLTF;
-
-      let Sync = () => {
-        if (
-          !camera ||
-          !panelSettings ||
-          !panelSettings.ApiKey ||
-          panelSettings.ApiKey == "" ||
-          panelSettings.Direct == ""
-        )
-          return;
-
-        poll(camera, panelSettings.Direct, panelSettings.ApiKey);
-      };
+      let panelSettings,
+        numAnimations,
+        currentAction,
+        GLTF;
 
       const crossFadeControls = [];
 
@@ -134,16 +179,28 @@
       init();
 
       function init() {
-        const container = document.getElementById("container");
+        const container =
+          document.getElementById("container");
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xa0a0a0);
-        scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
+        scene.background = new THREE.Color(
+          0xa0a0a0
+        );
+        scene.fog = new THREE.Fog(
+          0xa0a0a0,
+          10,
+          50
+        );
 
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+        const hemiLight =
+          new THREE.HemisphereLight(
+            0xffffff,
+            0x444444
+          );
         hemiLight.position.set(0, 20, 0);
         scene.add(hemiLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff);
+        const dirLight =
+          new THREE.DirectionalLight(0xffffff);
         dirLight.position.set(3, 10, 10);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 2;
@@ -158,7 +215,10 @@
 
         const mesh = new THREE.Mesh(
           new THREE.PlaneGeometry(100, 100),
-          new THREE.MeshPhongMaterial({ color: 0x999999, depthWrite: false })
+          new THREE.MeshPhongMaterial({
+            color: 0x999999,
+            depthWrite: false,
+          })
         );
         mesh.rotation.x = -Math.PI / 2;
         mesh.receiveShadow = true;
@@ -166,18 +226,25 @@
 
         const loader = new GLTFLoader();
 
-        document.getElementById("gltf").addEventListener("change", (e) => {
-          let url = URL.createObjectURL(e.target.files[0]);
-          loader.load(url, setUpObject);
-          document.querySelector(".select_file").style.display = "none";
-        });
+        document
+          .getElementById("gltf")
+          .addEventListener("change", (e) => {
+            let url = URL.createObjectURL(
+              e.target.files[0]
+            );
+            loader.load(url, setUpObject);
+            document.querySelector(
+              ".select_file"
+            ).style.display = "none";
+          });
 
         function setUpObject(gltf) {
           model = gltf.scene;
           GLTF = gltf;
           scene.add(model);
           if (GLTF.animations.length)
-            currentBaseAction = gltf.animations[0].name;
+            currentBaseAction =
+              gltf.animations[0].name;
 
           gltf.animations.forEach((anim, i) => {
             baseActions[anim.name] = {
@@ -186,10 +253,13 @@
           });
 
           model.traverse(function (object) {
-            if (object.isMesh) object.castShadow = true;
+            if (object.isMesh)
+              object.castShadow = true;
           });
 
-          skeleton = new THREE.SkeletonHelper(model);
+          skeleton = new THREE.SkeletonHelper(
+            model
+          );
           skeleton.visible = false;
           scene.add(skeleton);
 
@@ -198,12 +268,17 @@
 
           numAnimations = animations.length;
 
-          for (let i = 0; i !== numAnimations; ++i) {
+          for (
+            let i = 0;
+            i !== numAnimations;
+            ++i
+          ) {
             let clip = animations[i];
             const name = clip.name;
 
             if (baseActions[name]) {
-              const action = mixer.clipAction(clip);
+              const action =
+                mixer.clipAction(clip);
               activateAction(action);
               baseActions[name].action = action;
               allActions.push(action);
@@ -215,12 +290,22 @@
           animate();
         }
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer = new THREE.WebGLRenderer({
+          antialias: true,
+        });
+        renderer.setPixelRatio(
+          window.devicePixelRatio
+        );
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+        renderer.outputEncoding =
+          THREE.sRGBEncoding;
         renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
+        container.appendChild(
+          renderer.domElement
+        );
 
         // camera
         camera = new THREE.PerspectiveCamera(
@@ -233,7 +318,10 @@
 
         // Orbit
 
-        controls = new OrbitControls(camera, renderer.domElement);
+        controls = new OrbitControls(
+          camera,
+          renderer.domElement
+        );
         controls.enablePan = true;
         controls.enableZoom = true;
         controls.target.set(0, 1, 0);
@@ -241,32 +329,40 @@
 
         /// Fly
 
-        first_person_controls = new FirstPersonControls(
-          camera,
-          renderer.domElement
-        );
+        first_person_controls =
+          new FirstPersonControls(
+            camera,
+            renderer.domElement
+          );
 
         first_person_controls.movementSpeed = 10;
-        first_person_controls.domElement = renderer.domElement;
+        first_person_controls.domElement =
+          renderer.domElement;
         first_person_controls.lookSpeed = 0.1;
         first_person_controls.enabled = false;
 
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        window.addEventListener("resize", onWindowResize);
+        window.addEventListener(
+          "resize",
+          onWindowResize
+        );
       }
 
       function createPanel() {
         const panel = new GUI({ width: 310 });
 
-        const folder2 = panel.addFolder("LoggerData");
-        const folder1 = panel.addFolder("Base Actions");
+        const folder2 =
+          panel.addFolder("LoggerData");
+        const folder1 = panel.addFolder(
+          "Base Actions"
+        );
         const folder4 = panel.addFolder("Camera");
 
         panelSettings = {
           "modify time scale": 1.0,
-          Direct: "https://metalitix-dev.aircards.io/",
+          Direct: "dev",
           ApiKey: "",
           updateSpeed: 500,
           Loop: true,
@@ -274,23 +370,48 @@
           "Camera controls": "Orbit",
         };
 
-        const baseNames = ["None", ...Object.keys(baseActions)];
+        const baseNames = [
+          "None",
+          ...Object.keys(baseActions),
+        ];
 
         folder1
-          .add(panelSettings, "modify time scale", 0.0, 5, 0.01)
+          .add(
+            panelSettings,
+            "modify time scale",
+            0.0,
+            5,
+            0.01
+          )
           .onChange(modifyTimeScale);
 
-        if (GLTF.animations && GLTF.animations.length)
-          for (let i = 0, l = baseNames.length; i !== l; ++i) {
+        if (
+          GLTF.animations &&
+          GLTF.animations.length
+        )
+          for (
+            let i = 0, l = baseNames.length;
+            i !== l;
+            ++i
+          ) {
             const name = baseNames[i];
             const settings = baseActions[name];
             panelSettings[name] = function () {
-              const currentSettings = baseActions[currentBaseAction];
-              let start = currentSettings ? currentSettings.action : null;
-              currentAction = settings ? settings.action : null;
+              const currentSettings =
+                baseActions[currentBaseAction];
+              let start = currentSettings
+                ? currentSettings.action
+                : null;
+              currentAction = settings
+                ? settings.action
+                : null;
 
               if (start !== currentAction) {
-                prepareCrossFade(start, currentAction, 0.35);
+                prepareCrossFade(
+                  start,
+                  currentAction,
+                  0.35
+                );
               }
             };
 
@@ -298,53 +419,101 @@
               if (i === 0) panelSettings[name]();
             });
 
-            crossFadeControls.push(folder1.add(panelSettings, name).name(name.substr(0, 21)));
+            crossFadeControls.push(
+              folder1
+                .add(panelSettings, name)
+                .name(name.substr(0, 21))
+            );
 
             if (name != "None") {
               panelSettings[name + " time"] = 0;
-              let controller = folder1.add(
-                panelSettings,
-                name + " time",
-                0,
-                1,
-                0.01
-              ).name(("Time: " + name).substr(0, 15));
+              let controller = folder1
+                .add(
+                  panelSettings,
+                  name + " time",
+                  0,
+                  1,
+                  0.01
+                )
+                .name(
+                  ("Time: " + name).substr(0, 15)
+                );
 
               controller.onChange((e) => {
-                if (currentAction && currentAction.getClip().name == name) {
-                  currentAction.time = e * currentAction.getClip().duration;
-                  panelSettings[name + " time"] = e;
+                if (
+                  currentAction &&
+                  currentAction.getClip().name ==
+                    name
+                ) {
+                  currentAction.time =
+                    e *
+                    currentAction.getClip()
+                      .duration;
+                  panelSettings[name + " time"] =
+                    e;
                 }
               });
 
               let check = () => {
                 controller.updateDisplay();
 
-                window.requestAnimationFrame(check);
+                window.requestAnimationFrame(
+                  check
+                );
               };
 
               check();
             }
           }
 
-        folder2.add(panelSettings, "ApiKey");
-        folder2.add(panelSettings, "updateSpeed", 100, 5000).name("Update speed (ms)");
-        folder2.add(panelSettings, "Direct", [
-          "https://metalitix-dev.aircards.io/",
-          "https://metalitix-staging.aircards.io/",
-          "https://app.metalitix.com/",
-        ]);
-        folder2.add(panelSettings, "Loop").name("Is animation loop on");
-        folder4.add(panelSettings, "Show camera vectors & positions");
-        folder4
-          .add(panelSettings, "Camera controls", ["Orbit", "Mouse"])
+        let api_controller = folder2
+          .add(panelSettings, "ApiKey")
           .onChange((value) => {
-            if(controls && first_person_controls && value == "Orbit"){
+            CreateLogger(
+              camera,
+              panelSettings.Direct,
+              value
+            );
+          });
+        folder2
+          .add(
+            panelSettings,
+            "updateSpeed",
+            100,
+            5000
+          )
+          .name("Update speed (ms)");
+        folder2.add(panelSettings, "Direct", [
+          "dev",
+          "prod",
+        ]);
+        folder2
+          .add(panelSettings, "Loop")
+          .name("Is animation loop on");
+        folder4.add(
+          panelSettings,
+          "Show camera vectors & positions"
+        );
+        folder4
+          .add(panelSettings, "Camera controls", [
+            "Orbit",
+            "Mouse",
+          ])
+          .onChange((value) => {
+            if (
+              controls &&
+              first_person_controls &&
+              value == "Orbit"
+            ) {
               controls.enabled = true;
               first_person_controls.enabled = false;
             }
 
-            if(controls && first_person_controls && value == "Mouse"){
+            if (
+              controls &&
+              first_person_controls &&
+              value == "Mouse"
+            ) {
               controls.enabled = false;
               first_person_controls.enabled = true;
             }
@@ -367,31 +536,28 @@
         folder1.open();
         // folder2.open();
 
-        crossFadeControls.forEach(function (control) {
+        crossFadeControls.forEach(function (
+          control
+        ) {
           control.setInactive = function () {
-            control.domElement.classList.add("control-inactive");
+            control.domElement.classList.add(
+              "control-inactive"
+            );
           };
 
           control.setActive = function () {
-            control.domElement.classList.remove("control-inactive");
+            control.domElement.classList.remove(
+              "control-inactive"
+            );
           };
 
-          const settings = baseActions[control.property];
+          const settings =
+            baseActions[control.property];
 
           if (!settings || !settings.weight) {
             control.setInactive();
           }
         });
-
-        let startSync = () => {
-          setTimeout(() => {
-            console.log("Sync now!")
-            Sync();
-            startSync();
-          }, panelSettings.updateSpeed)
-        } 
-
-        startSync()
       }
 
       function activateAction(action) {
@@ -405,18 +571,32 @@
         mixer.timeScale = speed;
       }
 
-      function prepareCrossFade(startAction, endAction, duration) {
+      function prepareCrossFade(
+        startAction,
+        endAction,
+        duration
+      ) {
         // If the current action is 'idle', execute the crossfade immediately;
         // else wait until the current action has finished its current loop
 
         if (
-          (GLTF && currentBaseAction === GLTF.animations[0].name) ||
+          (GLTF &&
+            currentBaseAction ===
+              GLTF.animations[0].name) ||
           !startAction ||
           !endAction
         ) {
-          executeCrossFade(startAction, endAction, duration);
+          executeCrossFade(
+            startAction,
+            endAction,
+            duration
+          );
         } else {
-          synchronizeCrossFade(startAction, endAction, duration);
+          synchronizeCrossFade(
+            startAction,
+            endAction,
+            duration
+          );
         }
 
         // Update control colors
@@ -428,7 +608,9 @@
           currentBaseAction = "None";
         }
 
-        crossFadeControls.forEach(function (control) {
+        crossFadeControls.forEach(function (
+          control
+        ) {
           const name = control.property;
 
           if (name === currentBaseAction) {
@@ -439,19 +621,37 @@
         });
       }
 
-      function synchronizeCrossFade(startAction, endAction, duration) {
-        mixer.addEventListener("loop", onLoopFinished);
+      function synchronizeCrossFade(
+        startAction,
+        endAction,
+        duration
+      ) {
+        mixer.addEventListener(
+          "loop",
+          onLoopFinished
+        );
 
         function onLoopFinished(event) {
           if (event.action === startAction) {
-            mixer.removeEventListener("loop", onLoopFinished);
+            mixer.removeEventListener(
+              "loop",
+              onLoopFinished
+            );
 
-            executeCrossFade(startAction, endAction, duration);
+            executeCrossFade(
+              startAction,
+              endAction,
+              duration
+            );
           }
         }
       }
 
-      function executeCrossFade(startAction, endAction, duration) {
+      function executeCrossFade(
+        startAction,
+        endAction,
+        duration
+      ) {
         // Not only the start action, but also the end action must get a weight of 1 before fading
         // (concerning the start action this is already guaranteed in this place)
 
@@ -462,7 +662,11 @@
           if (startAction) {
             // Crossfade with warping
 
-            startAction.crossFadeTo(endAction, duration, true);
+            startAction.crossFadeTo(
+              endAction,
+              duration,
+              true
+            );
           } else {
             // Fade in
 
@@ -485,24 +689,41 @@
       }
 
       function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.aspect =
+          window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
       }
 
       function animate() {
-        if (first_person_controls && first_person_controls.enabled)
-          first_person_controls.update(clock.getDelta());
+        if (
+          first_person_controls &&
+          first_person_controls.enabled
+        )
+          first_person_controls.update(
+            clock.getDelta()
+          );
         // Render loop
 
-        if (panelSettings["Show camera vectors & positions"]) {
+        if (
+          panelSettings[
+            "Show camera vectors & positions"
+          ]
+        ) {
           camera.updateProjectionMatrix();
           camera.getWorldPosition(s);
           camera.getWorldQuaternion(q);
           r.setFromQuaternion(q);
 
-          const dir = new THREE.Vector3(0, 0, -1).applyEuler(
+          const dir = new THREE.Vector3(
+            0,
+            0,
+            -1
+          ).applyEuler(
             new THREE.Euler(r.x, r.y, r.z)
           );
           // dir.applyEuler()
@@ -514,17 +735,28 @@
           const length = 0.5;
           const hex = 0xff0000;
 
-          const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+          const arrowHelper =
+            new THREE.ArrowHelper(
+              dir,
+              origin,
+              length,
+              hex
+            );
           scene.add(arrowHelper);
         }
 
         requestAnimationFrame(animate);
 
-        for (let i = 0; i !== numAnimations; ++i) {
+        for (
+          let i = 0;
+          i !== numAnimations;
+          ++i
+        ) {
           const action = allActions[i];
           const clip = action.getClip();
           const settings = baseActions[clip.name];
-          settings.weight = action.getEffectiveWeight();
+          settings.weight =
+            action.getEffectiveWeight();
         }
 
         // Get the time elapsed since the last frame, used for mixer update
@@ -535,16 +767,21 @@
 
         mixer.update(mixerUpdateDelta);
 
-        
-
         if (currentAction) {
-          panelSettings[currentAction.getClip().name + " time"] =
-            currentAction.time / currentAction.getClip().duration;
+          panelSettings[
+            currentAction.getClip().name + " time"
+          ] =
+            currentAction.time /
+            currentAction.getClip().duration;
           animation_state.animations = [
             {
               name: currentAction.getClip().name,
-              loop: panelSettings.Loop ? true : "",
-              progress: currentAction.time / currentAction.getClip().duration,
+              loop: panelSettings.Loop
+                ? true
+                : "",
+              progress:
+                currentAction.time /
+                currentAction.getClip().duration,
             },
           ];
         }
