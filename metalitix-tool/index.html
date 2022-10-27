@@ -91,7 +91,7 @@
 
       const i = 200; // Polling interval
       const s = new Vector3();
-      const r = new Vector3();
+      const camera_rotation_e = new Euler();
       const q = new Quaternion();
 
       const CreateLogger = (object3D, appKey) => {
@@ -665,14 +665,14 @@
           camera.updateProjectionMatrix();
           camera.getWorldPosition(s);
           camera.getWorldQuaternion(q);
-          r.setFromQuaternion(q);
+          camera_rotation_e.setFromQuaternion(q);
 
           const dir = new THREE.Vector3(
             0,
             0,
             -1
           ).applyEuler(
-            new THREE.Euler(r.x, r.y, r.z)
+            new THREE.Euler(camera_rotation_e.x, camera_rotation_e.y, camera_rotation_e.z)
           );
           // dir.applyEuler()
 
