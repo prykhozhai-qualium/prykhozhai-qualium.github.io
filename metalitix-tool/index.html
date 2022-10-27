@@ -145,7 +145,7 @@
         scene.fog = new THREE.Fog(
           0xa0a0a0,
           10,
-          50
+          500
         );
 
         const hemiLight =
@@ -259,7 +259,6 @@
         );
         renderer.outputEncoding =
           THREE.sRGBEncoding;
-        renderer.shadowMap.enabled = true;
         container.appendChild(
           renderer.domElement
         );
@@ -269,7 +268,7 @@
           45,
           window.innerWidth / window.innerHeight,
           1,
-          100
+          9999
         );
         camera.position.set(-1, 2, 3);
 
