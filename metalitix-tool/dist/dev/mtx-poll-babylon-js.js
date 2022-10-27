@@ -405,6 +405,7 @@ class MetalitixLoggerBase {
             this.pollRecords.push(record);
         };
         this.sendPosition = (sendAll = false) => __awaiter(this, void 0, void 0, function* () {
+            this.pollInProgress = true;
             try {
                 const items = this.pollRecords.slice(0, _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_RECORDS_LENGTH);
                 const batchRecordsData = {
@@ -423,6 +424,9 @@ class MetalitixLoggerBase {
             catch (error) {
                 console.log('Something went wrong', error);
                 this.forceStopLoop();
+            }
+            finally {
+                this.pollInProgress = false;
             }
         });
         this.getUserMeta = () => {
@@ -484,7 +488,8 @@ class MetalitixLoggerBase {
             if (!start) {
                 this.sddNextUserPositionAndUpdateCameraIfNeeded();
             }
-            if (this.pollRecords.length > 0 &&
+            if (!this.pollInProgress &&
+                this.pollRecords.length > 0 &&
                 (this.pollRecords.length >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_RECORDS_LENGTH ||
                     Date.now() - this.lastPollTimestamp >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_SENDING_INTERVAL)) {
                 this.sendPosition();
@@ -519,7 +524,7 @@ class MetalitixLoggerBase {
             return this.sendPosition(true);
         };
         this.resumeSession = () => __awaiter(this, void 0, void 0, function* () {
-            if (Date.now() - this.lastPollTimestamp <= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_SESSION_KEEPALIVE_TIME) {
+            if (this.lastPollTimestamp < 0 || Date.now() - this.lastPollTimestamp <= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_SESSION_KEEPALIVE_TIME) {
                 /** If the session was resumed on time - we need to continue collect current session data */
                 this.forceStopLoop(); // in case if session was not paused
                 this.sendPositionLoop();
@@ -706,6 +711,7 @@ class MetalitixLoggerBase {
         this.previousCameraData = null;
         this.pollRecords = [];
         this.lastPollTimestamp = -1;
+        this.pollInProgress = false;
         this.nextPoll = -1;
     }
 }

@@ -63,26 +63,7 @@
       }
     </script>
 
-    <script src="/dist/dev/mtx-poll-three-js.js"></script>
-
-    <script>
-      window.MetalitixLoggerDev =
-        window.MetalitixLogger;
-    </script>
-
-    <script src="/dist/mtx-poll-three-js.js"></script>
-
-    <script>
-      window.MetalitixLoggerProd =
-        window.MetalitixLogger;
-    </script>
-
-    <script>
-      console.log(
-        new MetalitixLoggerDev(),
-        new MetalitixLoggerProd()
-      );
-    </script>
+    <script src="./dist/dev/mtx-poll-three-js.js"></script>
 
     <script type="module">
       import {
@@ -106,60 +87,36 @@
         animations: [],
       };
 
-      let loggers = {
-        dev: false,
-        prod: false,
-      };
+      let logger = false;
 
       const i = 200; // Polling interval
       const s = new Vector3();
       const r = new Vector3();
       const q = new Quaternion();
 
-      const CreateLogger = (
-        object3D,
-        direct,
-        appKey
-      ) => {
-        let data;
+      const CreateLogger = (object3D, appKey) => {
+        if (logger) return;
 
-        if (!loggers.dev && !loggers.prod) {
-          data = {
-            pollInterval:
-              panelSettings.updateSpeed,
-            apiVersion: "v2",
-            userMeta: {
-              sceneName: "Scene name",
-              gameLocation: "Game location name",
-              params: {
-                additionalField:
-                  "Any additional information",
-                // more fields ...
-              },
+        let data = {
+          pollInterval: panelSettings.updateSpeed,
+          apiVersion: "v2",
+          userMeta: {
+            sceneName: "Scene name",
+            gameLocation: "Game location name",
+            params: {
+              additionalField:
+                "Any additional information",
+              // more fields ...
             },
-          };
-        }
+          },
+        };
 
-        if (
-          panelSettings.Direct == "dev" &&
-          !loggers.dev
-        ) {
-          loggers.dev = new MetalitixLoggerDev(
-            panelSettings.ApiKey,
-            data
-          );
+        logger = new MetalitixLogger(
+          panelSettings.ApiKey,
+          data
+        );
 
-          loggers.dev.startSession(object3D);
-        } else if (
-          panelSettings.Direct == "prod" &&
-          !loggers.prod
-        ) {
-          loggers.prod = new MetalitixLoggerDev(
-            panelSettings.ApiKey,
-            data
-          );
-          loggers.prod.startSession(object3D);
-        }
+        logger.startSession(object3D);
         animation_state.animations = [];
       };
 
@@ -362,7 +319,6 @@
 
         panelSettings = {
           "modify time scale": 1.0,
-          Direct: "dev",
           ApiKey: "",
           updateSpeed: 500,
           Loop: true,
@@ -469,11 +425,7 @@
         let api_controller = folder2
           .add(panelSettings, "ApiKey")
           .onChange((value) => {
-            CreateLogger(
-              camera,
-              panelSettings.Direct,
-              value
-            );
+            CreateLogger(camera, value);
           });
         folder2
           .add(
@@ -483,10 +435,6 @@
             5000
           )
           .name("Update speed (ms)");
-        folder2.add(panelSettings, "Direct", [
-          "dev",
-          "prod",
-        ]);
         folder2
           .add(panelSettings, "Loop")
           .name("Is animation loop on");
