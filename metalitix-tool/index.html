@@ -41,6 +41,49 @@
   <body>
     <div id="container"></div>
 
+    <script id="load">
+
+      let direct = prompt(
+        "Type d (dev) || s (staging) | p (prod). Default - d (dev)"
+      );
+
+      let load = document.getElementById("load");
+      let path =
+        "./dist/dev/mtx-poll-three-js.js";
+
+      if (direct == "d") {
+        path = "./dist/dev/mtx-poll-three-js.js";
+      } 
+      
+      if (direct == "s") {
+        path =
+          "./dist/staging/mtx-poll-three-js.js";
+      } 
+      
+      if (direct == "p") {
+        path = "./dist/mtx-poll-three-js.js";
+      }
+
+      console.log(path)
+
+      newScript =
+        document.createElement("script");
+      newScript.type = "text/javascript";
+      newScript.src = path;
+      load.appendChild(newScript, "insertAfter");
+
+      function insertAfter(
+        newNode,
+        existingNode
+      ) {
+        existingNode.parentNode.insertBefore(
+          newNode,
+          existingNode.nextSibling
+        );
+      }
+      insertAfter(newScript, load);
+    </script>
+
     <!-- Import maps polyfill -->
     <!-- Remove this when import maps will be widely supported -->
     <script
@@ -62,8 +105,6 @@
         }
       }
     </script>
-
-    <script src="./dist/dev/mtx-poll-three-js.js"></script>
 
     <script type="module">
       import {
@@ -671,7 +712,11 @@
             0,
             -1
           ).applyEuler(
-            new THREE.Euler(camera_rotation_e.x, camera_rotation_e.y, camera_rotation_e.z)
+            new THREE.Euler(
+              camera_rotation_e.x,
+              camera_rotation_e.y,
+              camera_rotation_e.z
+            )
           );
           // dir.applyEuler()
 
