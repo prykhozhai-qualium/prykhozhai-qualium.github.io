@@ -42,7 +42,6 @@
     <div id="container"></div>
 
     <script id="load">
-
       let direct = prompt(
         "Type d (dev) || s (staging) | p (prod). Default - d (dev)"
       );
@@ -53,18 +52,18 @@
 
       if (direct == "d") {
         path = "./dist/dev/mtx-poll-three-js.js";
-      } 
-      
+      }
+
       if (direct == "s") {
         path =
           "./dist/staging/mtx-poll-three-js.js";
-      } 
-      
+      }
+
       if (direct == "p") {
         path = "./dist/mtx-poll-three-js.js";
       }
 
-      console.log(path)
+      console.log(path);
 
       newScript =
         document.createElement("script");
@@ -159,8 +158,16 @@
 
         logger.startSession(object3D);
         animation_state.animations = [];
-      };
 
+        allActions.forEach((action) => {
+          logger.setAnimation(action);
+          action.enabled = false;
+          action.time = 0;
+        });
+        setTimeout(() => {
+          console.log(allActions);
+        }, 500);
+      };
       let scene, renderer, camera, stats;
       let model, skeleton, mixer;
       let panelSettings,
@@ -412,7 +419,12 @@
             };
 
             window.requestAnimationFrame(() => {
-              if (i === 0) panelSettings[name]();
+              if (i === 0)
+                prepareCrossFade(
+                  currentAction,
+                  panelSettings[name](),
+                  0.35
+                );
             });
 
             crossFadeControls.push(
@@ -551,7 +563,7 @@
       function activateAction(action) {
         const clip = action.getClip();
         const settings = baseActions[clip.name];
-        setWeight(action, settings.weight);
+        setEnabled(action, settings.weight);
         action.play();
       }
 
@@ -614,66 +626,37 @@
         endAction,
         duration
       ) {
-        mixer.addEventListener(
-          "loop",
-          onLoopFinished
-        );
-
-        function onLoopFinished(event) {
-          if (event.action === startAction) {
-            mixer.removeEventListener(
-              "loop",
-              onLoopFinished
-            );
-
-            executeCrossFade(
-              startAction,
-              endAction,
-              duration
-            );
-          }
-        }
+        executeCrossFade(startAction, endAction);
       }
 
       function executeCrossFade(
         startAction,
-        endAction,
-        duration
+        endAction
       ) {
         // Not only the start action, but also the end action must get a weight of 1 before fading
         // (concerning the start action this is already guaranteed in this place)
 
         if (endAction) {
-          setWeight(endAction, 1);
+          setEnabled(endAction, 1);
           endAction.time = 0;
 
           if (startAction) {
             // Crossfade with warping
 
-            startAction.crossFadeTo(
-              endAction,
-              duration,
-              true
-            );
-          } else {
-            // Fade in
-
-            endAction.fadeIn(duration);
+            setEnabled(startAction, 0);
+            startAction.time = 0;
           }
-        } else {
-          // Fade out
-
-          startAction.fadeOut(duration);
+        } else if(startAction) {
+          setEnabled(startAction, 0);
+          startAction.time = 0;
         }
       }
 
       // This function is needed, since animationAction.crossFadeTo() disables its start action and sets
       // the start action's timeScale to ((start animation's duration) / (end animation's duration))
 
-      function setWeight(action, weight) {
-        action.enabled = true;
-        action.setEffectiveTimeScale(1);
-        action.setEffectiveWeight(weight);
+      function setEnabled(action, weight) {
+        action.enabled = Boolean(weight);
       }
 
       function onWindowResize() {
@@ -758,6 +741,17 @@
         // Update the animation mixer, the stats panel, and render this frame
 
         mixer.update(mixerUpdateDelta);
+
+        allActions.forEach((action) => {
+          console.log(
+            action.time,
+            action.weight,
+            action.enabled,
+            action.paused
+          );
+        });
+
+        console.log("---");
 
         if (currentAction) {
           panelSettings[
