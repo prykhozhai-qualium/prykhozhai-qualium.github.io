@@ -357,11 +357,9 @@
       function createPanel() {
         const panel = new GUI({ width: 310 });
 
-        const folder2 =
-          panel.addFolder("LoggerData");
-        const folder1 = panel.addFolder(
-          "Base Actions"
-        );
+        const folder2 = panel.addFolder("Logger");
+        const folder1 =
+          panel.addFolder("Animations");
         const folder4 = panel.addFolder("Camera");
 
         panelSettings = {
@@ -459,6 +457,29 @@
                       .duration;
                   panelSettings[name + " time"] =
                     e;
+                }
+              });
+
+              panelSettings[name + " weight"] = 0;
+
+              let weight_controller = folder1
+                .add(
+                  panelSettings,
+                  name + " weight",
+                  0,
+                  1,
+                  0.01
+                )
+                .name(
+                  ("Weight: " + name).substr(
+                    0,
+                    15
+                  )
+                );
+
+              weight_controller.onChange((e) => {
+                if (currentAction) {
+                  currentAction.weight = e;
                 }
               });
 
@@ -646,7 +667,7 @@
             setEnabled(startAction, 0);
             startAction.time = 0;
           }
-        } else if(startAction) {
+        } else if (startAction) {
           setEnabled(startAction, 0);
           startAction.time = 0;
         }

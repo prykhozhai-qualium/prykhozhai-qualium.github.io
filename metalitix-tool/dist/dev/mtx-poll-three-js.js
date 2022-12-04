@@ -5054,8 +5054,11 @@ const setSurveyLogged = (appkey, rating) => {
     logs[appkey] = rating;
     return localStorage.setItem(SURVEY_SUCCESSFULLY_LOGGED, JSON.stringify(logs));
 };
-let surveyHolder = document.createElement('div');
+let surveyHolder = null;
 const hideSurvey = (holder) => {
+    if (holder === null) {
+        return;
+    }
     holder.classList.add('mtx-survey--close');
     setTimeout(() => document.body.contains(holder) && document.body.removeChild(holder), 350);
 };
@@ -5071,7 +5074,7 @@ const addSurvey = ({ appkey, sessionId, force = false, theme = 'white' }) => {
     surveyHolder.innerHTML = template;
     let rating = null;
     document.body.appendChild(surveyHolder);
-    setTimeout(() => surveyHolder.classList.add('mtx-survey--open'), 0);
+    setTimeout(() => surveyHolder === null || surveyHolder === void 0 ? void 0 : surveyHolder.classList.add('mtx-survey--open'), 0);
     const items = [...surveyHolder.querySelectorAll('.mtx-survey-item')];
     const submitButton = surveyHolder.querySelector('.mtx-survey-submit-button');
     const setActiveItem = (item) => {
@@ -5152,6 +5155,7 @@ class MetalitixLoggerBase {
     constructor(appKey, options = {}) {
         this.interval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE;
         this.customData = {};
+        this.previousAnimations = {};
         this.object3D = null;
         this.setPollInterval = (pollInterval) => {
             this.interval = Math.min(_constants__WEBPACK_IMPORTED_MODULE_1__.MAX_INTERVAL_VALUE, Math.max(_constants__WEBPACK_IMPORTED_MODULE_1__.MIN_INTERVAL_VALUE, pollInterval));
@@ -5183,13 +5187,22 @@ class MetalitixLoggerBase {
         this.getRecord = (eventType, sessionId, { userEvent, userMeta, camera, data }) => {
             var _a;
             const resultData = Object.assign({}, this.customData, data);
+            const currentAnimations = this.getAnimationsData();
+            const animations = [];
+            currentAnimations.forEach(animation => {
+                const previousAnimation = this.previousAnimations[animation.name];
+                if (previousAnimation === undefined || !(0,_utils__WEBPACK_IMPORTED_MODULE_3__.deepEqual)(previousAnimation, animation)) {
+                    animations.push(animation);
+                }
+                this.previousAnimations[animation.name] = animation;
+            });
             const base = {
                 object: 'xr.analytics.record',
                 appkey: this.appKey,
                 apiver: this.apiVersion,
                 sessionId,
                 timestamp: Date.now(),
-                animations: this.getAnimationsData(),
+                animations,
                 data: resultData,
                 userMeta,
             };
@@ -5532,7 +5545,7 @@ class MetalitixLoggerBase {
             }
             (0,_mtx_engagement_survey__WEBPACK_IMPORTED_MODULE_4__.addSurvey)({ appkey: this.appKey, sessionId: this.sessionId, theme: surveyTheme !== null && surveyTheme !== void 0 ? surveyTheme : this.surveyTheme, force: true });
         };
-        const { pollInterval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE, apiVersion = 'v2', userMeta = {}, showSurvey = false, surveyTheme, } = options;
+        const { pollInterval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE, apiVersion = 'v2', userMeta = {}, showSurvey = true, surveyTheme, } = options;
         this.appKey = appKey;
         this.apiVersion = apiVersion;
         this.userMeta = userMeta;
@@ -5924,13 +5937,12 @@ class MetalitixLogger extends _mtx_poll_base__WEBPACK_IMPORTED_MODULE_0__["defau
             };
         };
         this.getAnimationsData = () => {
-            return Object.values(this.animationActions)
-                .filter(action => action.enabled)
-                .map(action => {
+            return Object.values(this.animationActions).map(action => {
                 const clip = action.getClip();
                 return {
                     name: clip.name,
                     progress: action.time / clip.duration,
+                    weight: action.weight,
                     loop: action.loop === three_src_constants__WEBPACK_IMPORTED_MODULE_1__.LoopRepeat,
                 };
             });
