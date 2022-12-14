@@ -361,6 +361,8 @@
         const folder1 =
           panel.addFolder("Animations");
         const folder4 = panel.addFolder("Camera");
+        const folder5 =
+          panel.addFolder("Automove");
 
         panelSettings = {
           "modify time scale": 1.0,
@@ -369,6 +371,9 @@
           Loop: true,
           "Show camera vectors & positions": false,
           "Camera controls": "Orbit",
+          Automove: false,
+          AutomoveScaleFactor: 0.1,
+          AutomoveMaxDistance: 500,
         };
 
         const baseNames = [
@@ -579,6 +584,25 @@
             control.setInactive();
           }
         });
+
+        folder5
+          .add(panelSettings, "Automove")
+          .name("Enabled");
+        folder5.add(
+          panelSettings,
+          "AutomoveScaleFactor",
+          0.001,
+          1,
+          0.1
+        );
+
+        folder5.add(
+          panelSettings,
+          "AutomoveMaxDistance",
+          100,
+          4000,
+          100
+        );
       }
 
       function activateAction(action) {
@@ -691,7 +715,35 @@
         );
       }
 
+      let automove_path_length = 0;
+      let automove_vector = 1;
+      let rand_bias = Math.random();
       function animate() {
+        if (
+          panelSettings.Automove &&
+          panelSettings.AutomoveScaleFactor &&
+          panelSettings.AutomoveMaxDistance
+        ) {
+          automove_path_length += automove_vector;
+          camera.position[rand_bias > 0.5 ? 'x' : 'z'] +=
+            automove_vector * panelSettings.AutomoveScaleFactor;
+          camera.position[rand_bias > 0.5 ? 'z' : 'x'] += Math.cos(
+            camera.position[rand_bias > 0.5 ? 'x' : 'z']
+          ) * rand_bias * 0.8;
+
+          if (automove_path_length > panelSettings.AutomoveMaxDistance) {
+            automove_vector = -1;
+          }
+
+          if (automove_path_length < -panelSettings.AutomoveMaxDistance) {
+            automove_vector = 1;
+            rand_bias = Math.random()
+
+            camera.position.x = Math.random() * 5;
+            camera.position.z = Math.random() * 5;
+          }
+        }
+
         if (
           first_person_controls &&
           first_person_controls.enabled
