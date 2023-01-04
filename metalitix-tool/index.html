@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>
-      three.js webgl - additive animation -
-      skinning
-    </title>
+    <title>three.js webgl - additive animation - skinning</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="main.css"
-    />
+    <link type="text/css" rel="stylesheet" href="main.css" />
     <style>
       a {
         color: blue;
@@ -42,43 +35,37 @@
     <div id="container"></div>
 
     <script id="load">
-      let direct = prompt(
-        "Type d (dev) || s (staging) | p (prod). Default - d (dev)"
-      );
+      function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return "";
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      let direct = getParameterByName("direct");
 
       let load = document.getElementById("load");
-      let path =
-        "./dist/dev/mtx-poll-three-js.js";
-
-      if (direct == "d") {
-        path = "./dist/dev/mtx-poll-three-js.js";
-      }
+      let path = "./dist/dev/mtx-poll-three-js.js";
 
       if (direct == "s") {
-        path =
-          "./dist/staging/mtx-poll-three-js.js";
-      }
-
-      if (direct == "p") {
+        path = "./dist/staging/mtx-poll-three-js.js";
+      } else if (direct == "p") {
         path = "./dist/mtx-poll-three-js.js";
+      } else {
+        path = "./dist/dev/mtx-poll-three-js.js";
       }
 
       console.log(path);
 
-      newScript =
-        document.createElement("script");
+      newScript = document.createElement("script");
       newScript.type = "text/javascript";
       newScript.src = path;
       load.appendChild(newScript, "insertAfter");
 
-      function insertAfter(
-        newNode,
-        existingNode
-      ) {
-        existingNode.parentNode.insertBefore(
-          newNode,
-          existingNode.nextSibling
-        );
+      function insertAfter(newNode, existingNode) {
+        existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
       }
       insertAfter(newScript, load);
     </script>
@@ -106,11 +93,7 @@
     </script>
 
     <script type="module">
-      import {
-        Vector3,
-        Euler,
-        Quaternion,
-      } from "three";
+      import { Vector3, Euler, Quaternion } from "three";
       import * as THREE from "three";
 
       import Stats from "three/addons/libs/stats.module.js";
@@ -144,17 +127,13 @@
             sceneName: "Scene name",
             gameLocation: "Game location name",
             params: {
-              additionalField:
-                "Any additional information",
+              additionalField: "Any additional information",
               // more fields ...
             },
           },
         };
 
-        logger = new MetalitixLogger(
-          panelSettings.ApiKey,
-          data
-        );
+        logger = new MetalitixLogger(panelSettings.ApiKey, data);
 
         logger.startSession(object3D);
         animation_state.animations = [];
@@ -170,10 +149,7 @@
       };
       let scene, renderer, camera, stats;
       let model, skeleton, mixer;
-      let panelSettings,
-        numAnimations,
-        currentAction,
-        GLTF;
+      let panelSettings, numAnimations, currentAction, GLTF;
 
       const crossFadeControls = [];
 
@@ -184,28 +160,16 @@
       init();
 
       function init() {
-        const container =
-          document.getElementById("container");
+        const container = document.getElementById("container");
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(
-          0xa0a0a0
-        );
-        scene.fog = new THREE.Fog(
-          0xa0a0a0,
-          10,
-          500
-        );
+        scene.background = new THREE.Color(0xa0a0a0);
+        scene.fog = new THREE.Fog(0xa0a0a0, 10, 500);
 
-        const hemiLight =
-          new THREE.HemisphereLight(
-            0xffffff,
-            0x444444
-          );
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
         hemiLight.position.set(0, 20, 0);
         scene.add(hemiLight);
 
-        const dirLight =
-          new THREE.DirectionalLight(0xffffff);
+        const dirLight = new THREE.DirectionalLight(0xffffff);
         dirLight.position.set(3, 10, 10);
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = 2;
@@ -231,25 +195,18 @@
 
         const loader = new GLTFLoader();
 
-        document
-          .getElementById("gltf")
-          .addEventListener("change", (e) => {
-            let url = URL.createObjectURL(
-              e.target.files[0]
-            );
-            loader.load(url, setUpObject);
-            document.querySelector(
-              ".select_file"
-            ).style.display = "none";
-          });
+        document.getElementById("gltf").addEventListener("change", (e) => {
+          let url = URL.createObjectURL(e.target.files[0]);
+          loader.load(url, setUpObject);
+          document.querySelector(".select_file").style.display = "none";
+        });
 
         function setUpObject(gltf) {
           model = gltf.scene;
           GLTF = gltf;
           scene.add(model);
           if (GLTF.animations.length)
-            currentBaseAction =
-              gltf.animations[0].name;
+            currentBaseAction = gltf.animations[0].name;
 
           gltf.animations.forEach((anim, i) => {
             baseActions[anim.name] = {
@@ -258,13 +215,10 @@
           });
 
           model.traverse(function (object) {
-            if (object.isMesh)
-              object.castShadow = true;
+            if (object.isMesh) object.castShadow = true;
           });
 
-          skeleton = new THREE.SkeletonHelper(
-            model
-          );
+          skeleton = new THREE.SkeletonHelper(model);
           skeleton.visible = false;
           scene.add(skeleton);
 
@@ -273,17 +227,12 @@
 
           numAnimations = animations.length;
 
-          for (
-            let i = 0;
-            i !== numAnimations;
-            ++i
-          ) {
+          for (let i = 0; i !== numAnimations; ++i) {
             let clip = animations[i];
             const name = clip.name;
 
             if (baseActions[name]) {
-              const action =
-                mixer.clipAction(clip);
+              const action = mixer.clipAction(clip);
               activateAction(action);
               baseActions[name].action = action;
               allActions.push(action);
@@ -298,18 +247,10 @@
         renderer = new THREE.WebGLRenderer({
           antialias: true,
         });
-        renderer.setPixelRatio(
-          window.devicePixelRatio
-        );
-        renderer.setSize(
-          window.innerWidth,
-          window.innerHeight
-        );
-        renderer.outputEncoding =
-          THREE.sRGBEncoding;
-        container.appendChild(
-          renderer.domElement
-        );
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        container.appendChild(renderer.domElement);
 
         // camera
         camera = new THREE.PerspectiveCamera(
@@ -322,10 +263,7 @@
 
         // Orbit
 
-        controls = new OrbitControls(
-          camera,
-          renderer.domElement
-        );
+        controls = new OrbitControls(camera, renderer.domElement);
         controls.enablePan = true;
         controls.enableZoom = true;
         controls.target.set(0, 1, 0);
@@ -333,36 +271,29 @@
 
         /// Fly
 
-        first_person_controls =
-          new FirstPersonControls(
-            camera,
-            renderer.domElement
-          );
+        first_person_controls = new FirstPersonControls(
+          camera,
+          renderer.domElement
+        );
 
         first_person_controls.movementSpeed = 10;
-        first_person_controls.domElement =
-          renderer.domElement;
+        first_person_controls.domElement = renderer.domElement;
         first_person_controls.lookSpeed = 0.1;
         first_person_controls.enabled = false;
 
         stats = new Stats();
         container.appendChild(stats.dom);
 
-        window.addEventListener(
-          "resize",
-          onWindowResize
-        );
+        window.addEventListener("resize", onWindowResize);
       }
 
       function createPanel() {
         const panel = new GUI({ width: 310 });
 
         const folder2 = panel.addFolder("Logger");
-        const folder1 =
-          panel.addFolder("Animations");
+        const folder1 = panel.addFolder("Animations");
         const folder4 = panel.addFolder("Camera");
-        const folder5 =
-          panel.addFolder("Automove");
+        const folder5 = panel.addFolder("Automove");
 
         panelSettings = {
           "modify time scale": 1.0,
@@ -376,111 +307,53 @@
           AutomoveMaxDistance: 500,
         };
 
-        const baseNames = [
-          "None",
-          ...Object.keys(baseActions),
-        ];
+        const baseNames = ["None", ...Object.keys(baseActions)];
 
         folder1
-          .add(
-            panelSettings,
-            "modify time scale",
-            0.0,
-            5,
-            0.01
-          )
+          .add(panelSettings, "modify time scale", 0.0, 5, 0.01)
           .onChange(modifyTimeScale);
 
-        if (
-          GLTF.animations &&
-          GLTF.animations.length
-        )
-          for (
-            let i = 0, l = baseNames.length;
-            i !== l;
-            ++i
-          ) {
+        if (GLTF.animations && GLTF.animations.length)
+          for (let i = 0, l = baseNames.length; i !== l; ++i) {
             const name = baseNames[i];
             const settings = baseActions[name];
             panelSettings[name] = function () {
-              const currentSettings =
-                baseActions[currentBaseAction];
-              let start = currentSettings
-                ? currentSettings.action
-                : null;
-              currentAction = settings
-                ? settings.action
-                : null;
+              const currentSettings = baseActions[currentBaseAction];
+              let start = currentSettings ? currentSettings.action : null;
+              currentAction = settings ? settings.action : null;
 
               if (start !== currentAction) {
-                prepareCrossFade(
-                  start,
-                  currentAction,
-                  0.35
-                );
+                prepareCrossFade(start, currentAction, 0.35);
               }
             };
 
             window.requestAnimationFrame(() => {
               if (i === 0)
-                prepareCrossFade(
-                  currentAction,
-                  panelSettings[name](),
-                  0.35
-                );
+                prepareCrossFade(currentAction, panelSettings[name](), 0.35);
             });
 
             crossFadeControls.push(
-              folder1
-                .add(panelSettings, name)
-                .name(name.substr(0, 21))
+              folder1.add(panelSettings, name).name(name.substr(0, 21))
             );
 
             if (name != "None") {
               panelSettings[name + " time"] = 0;
               let controller = folder1
-                .add(
-                  panelSettings,
-                  name + " time",
-                  0,
-                  1,
-                  0.01
-                )
-                .name(
-                  ("Time: " + name).substr(0, 15)
-                );
+                .add(panelSettings, name + " time", 0, 1, 0.01)
+                .name(("Time: " + name).substr(0, 15));
 
               controller.onChange((e) => {
-                if (
-                  currentAction &&
-                  currentAction.getClip().name ==
-                    name
-                ) {
-                  currentAction.time =
-                    e *
-                    currentAction.getClip()
-                      .duration;
-                  panelSettings[name + " time"] =
-                    e;
+                if (currentAction && currentAction.getClip().name == name) {
+                  currentAction.time = e * currentAction.getClip().duration;
+                  panelSettings[name + " time"] = e;
                 }
               });
 
               panelSettings[name + " weight"] = 0;
 
               let weight_controller = folder1
-                .add(
-                  panelSettings,
-                  name + " weight",
-                  0,
-                  1,
-                  0.01
-                )
-                .name(
-                  ("Weight: " + name).substr(
-                    0,
-                    15
-                  )
-                );
+                .add(panelSettings, name + " weight", 0, 1, 0.01)
+                .name(("Weight: " + name).substr(0, 15));
 
               weight_controller.onChange((e) => {
                 if (currentAction) {
@@ -491,9 +364,7 @@
               let check = () => {
                 controller.updateDisplay();
 
-                window.requestAnimationFrame(
-                  check
-                );
+                window.requestAnimationFrame(check);
               };
 
               check();
@@ -506,40 +377,19 @@
             CreateLogger(camera, value);
           });
         folder2
-          .add(
-            panelSettings,
-            "updateSpeed",
-            100,
-            5000
-          )
+          .add(panelSettings, "updateSpeed", 100, 5000)
           .name("Update speed (ms)");
-        folder2
-          .add(panelSettings, "Loop")
-          .name("Is animation loop on");
-        folder4.add(
-          panelSettings,
-          "Show camera vectors & positions"
-        );
+        folder2.add(panelSettings, "Loop").name("Is animation loop on");
+        folder4.add(panelSettings, "Show camera vectors & positions");
         folder4
-          .add(panelSettings, "Camera controls", [
-            "Orbit",
-            "Mouse",
-          ])
+          .add(panelSettings, "Camera controls", ["Orbit", "Mouse"])
           .onChange((value) => {
-            if (
-              controls &&
-              first_person_controls &&
-              value == "Orbit"
-            ) {
+            if (controls && first_person_controls && value == "Orbit") {
               controls.enabled = true;
               first_person_controls.enabled = false;
             }
 
-            if (
-              controls &&
-              first_person_controls &&
-              value == "Mouse"
-            ) {
+            if (controls && first_person_controls && value == "Mouse") {
               controls.enabled = false;
               first_person_controls.enabled = true;
             }
@@ -562,47 +412,26 @@
         folder1.open();
         // folder2.open();
 
-        crossFadeControls.forEach(function (
-          control
-        ) {
+        crossFadeControls.forEach(function (control) {
           control.setInactive = function () {
-            control.domElement.classList.add(
-              "control-inactive"
-            );
+            control.domElement.classList.add("control-inactive");
           };
 
           control.setActive = function () {
-            control.domElement.classList.remove(
-              "control-inactive"
-            );
+            control.domElement.classList.remove("control-inactive");
           };
 
-          const settings =
-            baseActions[control.property];
+          const settings = baseActions[control.property];
 
           if (!settings || !settings.weight) {
             control.setInactive();
           }
         });
 
-        folder5
-          .add(panelSettings, "Automove")
-          .name("Enabled");
-        folder5.add(
-          panelSettings,
-          "AutomoveScaleFactor",
-          0.001,
-          1,
-          0.1
-        );
+        folder5.add(panelSettings, "Automove").name("Enabled");
+        folder5.add(panelSettings, "AutomoveScaleFactor", 0.001, 1, 0.1);
 
-        folder5.add(
-          panelSettings,
-          "AutomoveMaxDistance",
-          100,
-          4000,
-          100
-        );
+        folder5.add(panelSettings, "AutomoveMaxDistance", 100, 4000, 100);
       }
 
       function activateAction(action) {
@@ -616,32 +445,18 @@
         mixer.timeScale = speed;
       }
 
-      function prepareCrossFade(
-        startAction,
-        endAction,
-        duration
-      ) {
+      function prepareCrossFade(startAction, endAction, duration) {
         // If the current action is 'idle', execute the crossfade immediately;
         // else wait until the current action has finished its current loop
 
         if (
-          (GLTF &&
-            currentBaseAction ===
-              GLTF.animations[0].name) ||
+          (GLTF && currentBaseAction === GLTF.animations[0].name) ||
           !startAction ||
           !endAction
         ) {
-          executeCrossFade(
-            startAction,
-            endAction,
-            duration
-          );
+          executeCrossFade(startAction, endAction, duration);
         } else {
-          synchronizeCrossFade(
-            startAction,
-            endAction,
-            duration
-          );
+          synchronizeCrossFade(startAction, endAction, duration);
         }
 
         // Update control colors
@@ -653,9 +468,7 @@
           currentBaseAction = "None";
         }
 
-        crossFadeControls.forEach(function (
-          control
-        ) {
+        crossFadeControls.forEach(function (control) {
           const name = control.property;
 
           if (name === currentBaseAction) {
@@ -666,18 +479,11 @@
         });
       }
 
-      function synchronizeCrossFade(
-        startAction,
-        endAction,
-        duration
-      ) {
+      function synchronizeCrossFade(startAction, endAction, duration) {
         executeCrossFade(startAction, endAction);
       }
 
-      function executeCrossFade(
-        startAction,
-        endAction
-      ) {
+      function executeCrossFade(startAction, endAction) {
         // Not only the start action, but also the end action must get a weight of 1 before fading
         // (concerning the start action this is already guaranteed in this place)
 
@@ -705,14 +511,10 @@
       }
 
       function onWindowResize() {
-        camera.aspect =
-          window.innerWidth / window.innerHeight;
+        camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(
-          window.innerWidth,
-          window.innerHeight
-        );
+        renderer.setSize(window.innerWidth, window.innerHeight);
       }
 
       let automove_path_length = 0;
@@ -725,11 +527,12 @@
           panelSettings.AutomoveMaxDistance
         ) {
           automove_path_length += automove_vector;
-          camera.position[rand_bias > 0.5 ? 'x' : 'z'] +=
+          camera.position[rand_bias > 0.5 ? "x" : "z"] +=
             automove_vector * panelSettings.AutomoveScaleFactor;
-          camera.position[rand_bias > 0.5 ? 'z' : 'x'] += Math.cos(
-            camera.position[rand_bias > 0.5 ? 'x' : 'z']
-          ) * rand_bias * 0.8;
+          camera.position[rand_bias > 0.5 ? "z" : "x"] +=
+            Math.cos(camera.position[rand_bias > 0.5 ? "x" : "z"]) *
+            rand_bias *
+            0.8;
 
           if (automove_path_length > panelSettings.AutomoveMaxDistance) {
             automove_vector = -1;
@@ -737,37 +540,24 @@
 
           if (automove_path_length < -panelSettings.AutomoveMaxDistance) {
             automove_vector = 1;
-            rand_bias = Math.random()
+            rand_bias = Math.random();
 
             camera.position.x = Math.random() * 5;
             camera.position.z = Math.random() * 5;
           }
         }
 
-        if (
-          first_person_controls &&
-          first_person_controls.enabled
-        )
-          first_person_controls.update(
-            clock.getDelta()
-          );
+        if (first_person_controls && first_person_controls.enabled)
+          first_person_controls.update(clock.getDelta());
         // Render loop
 
-        if (
-          panelSettings[
-            "Show camera vectors & positions"
-          ]
-        ) {
+        if (panelSettings["Show camera vectors & positions"]) {
           camera.updateProjectionMatrix();
           camera.getWorldPosition(s);
           camera.getWorldQuaternion(q);
           camera_rotation_e.setFromQuaternion(q);
 
-          const dir = new THREE.Vector3(
-            0,
-            0,
-            -1
-          ).applyEuler(
+          const dir = new THREE.Vector3(0, 0, -1).applyEuler(
             new THREE.Euler(
               camera_rotation_e.x,
               camera_rotation_e.y,
@@ -783,28 +573,17 @@
           const length = 0.5;
           const hex = 0xff0000;
 
-          const arrowHelper =
-            new THREE.ArrowHelper(
-              dir,
-              origin,
-              length,
-              hex
-            );
+          const arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
           scene.add(arrowHelper);
         }
 
         requestAnimationFrame(animate);
 
-        for (
-          let i = 0;
-          i !== numAnimations;
-          ++i
-        ) {
+        for (let i = 0; i !== numAnimations; ++i) {
           const action = allActions[i];
           const clip = action.getClip();
           const settings = baseActions[clip.name];
-          settings.weight =
-            action.getEffectiveWeight();
+          settings.weight = action.getEffectiveWeight();
         }
 
         // Get the time elapsed since the last frame, used for mixer update
@@ -827,20 +606,13 @@
         console.log("---");
 
         if (currentAction) {
-          panelSettings[
-            currentAction.getClip().name + " time"
-          ] =
-            currentAction.time /
-            currentAction.getClip().duration;
+          panelSettings[currentAction.getClip().name + " time"] =
+            currentAction.time / currentAction.getClip().duration;
           animation_state.animations = [
             {
               name: currentAction.getClip().name,
-              loop: panelSettings.Loop
-                ? true
-                : "",
-              progress:
-                currentAction.time /
-                currentAction.getClip().duration,
+              loop: panelSettings.Loop ? true : "",
+              progress: currentAction.time / currentAction.getClip().duration,
             },
           ];
         }
