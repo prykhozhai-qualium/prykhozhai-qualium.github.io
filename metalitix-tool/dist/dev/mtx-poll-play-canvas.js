@@ -1861,6 +1861,277 @@ const GLSL3 = '300 es';
 
 /***/ }),
 
+/***/ "./node_modules/three/src/math/MathUtils.js":
+/*!**************************************************!*\
+  !*** ./node_modules/three/src/math/MathUtils.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DEG2RAD": () => (/* binding */ DEG2RAD),
+/* harmony export */   "RAD2DEG": () => (/* binding */ RAD2DEG),
+/* harmony export */   "ceilPowerOfTwo": () => (/* binding */ ceilPowerOfTwo),
+/* harmony export */   "clamp": () => (/* binding */ clamp),
+/* harmony export */   "damp": () => (/* binding */ damp),
+/* harmony export */   "degToRad": () => (/* binding */ degToRad),
+/* harmony export */   "euclideanModulo": () => (/* binding */ euclideanModulo),
+/* harmony export */   "floorPowerOfTwo": () => (/* binding */ floorPowerOfTwo),
+/* harmony export */   "generateUUID": () => (/* binding */ generateUUID),
+/* harmony export */   "inverseLerp": () => (/* binding */ inverseLerp),
+/* harmony export */   "isPowerOfTwo": () => (/* binding */ isPowerOfTwo),
+/* harmony export */   "lerp": () => (/* binding */ lerp),
+/* harmony export */   "mapLinear": () => (/* binding */ mapLinear),
+/* harmony export */   "pingpong": () => (/* binding */ pingpong),
+/* harmony export */   "radToDeg": () => (/* binding */ radToDeg),
+/* harmony export */   "randFloat": () => (/* binding */ randFloat),
+/* harmony export */   "randFloatSpread": () => (/* binding */ randFloatSpread),
+/* harmony export */   "randInt": () => (/* binding */ randInt),
+/* harmony export */   "seededRandom": () => (/* binding */ seededRandom),
+/* harmony export */   "setQuaternionFromProperEuler": () => (/* binding */ setQuaternionFromProperEuler),
+/* harmony export */   "smootherstep": () => (/* binding */ smootherstep),
+/* harmony export */   "smoothstep": () => (/* binding */ smoothstep)
+/* harmony export */ });
+const _lut = [];
+
+for ( let i = 0; i < 256; i ++ ) {
+
+	_lut[ i ] = ( i < 16 ? '0' : '' ) + ( i ).toString( 16 );
+
+}
+
+let _seed = 1234567;
+
+
+const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+
+// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+function generateUUID() {
+
+	const d0 = Math.random() * 0xffffffff | 0;
+	const d1 = Math.random() * 0xffffffff | 0;
+	const d2 = Math.random() * 0xffffffff | 0;
+	const d3 = Math.random() * 0xffffffff | 0;
+	const uuid = _lut[ d0 & 0xff ] + _lut[ d0 >> 8 & 0xff ] + _lut[ d0 >> 16 & 0xff ] + _lut[ d0 >> 24 & 0xff ] + '-' +
+			_lut[ d1 & 0xff ] + _lut[ d1 >> 8 & 0xff ] + '-' + _lut[ d1 >> 16 & 0x0f | 0x40 ] + _lut[ d1 >> 24 & 0xff ] + '-' +
+			_lut[ d2 & 0x3f | 0x80 ] + _lut[ d2 >> 8 & 0xff ] + '-' + _lut[ d2 >> 16 & 0xff ] + _lut[ d2 >> 24 & 0xff ] +
+			_lut[ d3 & 0xff ] + _lut[ d3 >> 8 & 0xff ] + _lut[ d3 >> 16 & 0xff ] + _lut[ d3 >> 24 & 0xff ];
+
+	// .toUpperCase() here flattens concatenated strings to save heap memory space.
+	return uuid.toUpperCase();
+
+}
+
+function clamp( value, min, max ) {
+
+	return Math.max( min, Math.min( max, value ) );
+
+}
+
+// compute euclidian modulo of m % n
+// https://en.wikipedia.org/wiki/Modulo_operation
+function euclideanModulo( n, m ) {
+
+	return ( ( n % m ) + m ) % m;
+
+}
+
+// Linear mapping from range <a1, a2> to range <b1, b2>
+function mapLinear( x, a1, a2, b1, b2 ) {
+
+	return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
+
+}
+
+// https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/inverse-lerp-a-super-useful-yet-often-overlooked-function-r5230/
+function inverseLerp( x, y, value ) {
+
+	if ( x !== y ) {
+
+		return ( value - x ) / ( y - x );
+
+	} else {
+
+		return 0;
+
+	}
+
+}
+
+// https://en.wikipedia.org/wiki/Linear_interpolation
+function lerp( x, y, t ) {
+
+	return ( 1 - t ) * x + t * y;
+
+}
+
+// http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
+function damp( x, y, lambda, dt ) {
+
+	return lerp( x, y, 1 - Math.exp( - lambda * dt ) );
+
+}
+
+// https://www.desmos.com/calculator/vcsjnyz7x4
+function pingpong( x, length = 1 ) {
+
+	return length - Math.abs( euclideanModulo( x, length * 2 ) - length );
+
+}
+
+// http://en.wikipedia.org/wiki/Smoothstep
+function smoothstep( x, min, max ) {
+
+	if ( x <= min ) return 0;
+	if ( x >= max ) return 1;
+
+	x = ( x - min ) / ( max - min );
+
+	return x * x * ( 3 - 2 * x );
+
+}
+
+function smootherstep( x, min, max ) {
+
+	if ( x <= min ) return 0;
+	if ( x >= max ) return 1;
+
+	x = ( x - min ) / ( max - min );
+
+	return x * x * x * ( x * ( x * 6 - 15 ) + 10 );
+
+}
+
+// Random integer from <low, high> interval
+function randInt( low, high ) {
+
+	return low + Math.floor( Math.random() * ( high - low + 1 ) );
+
+}
+
+// Random float from <low, high> interval
+function randFloat( low, high ) {
+
+	return low + Math.random() * ( high - low );
+
+}
+
+// Random float from <-range/2, range/2> interval
+function randFloatSpread( range ) {
+
+	return range * ( 0.5 - Math.random() );
+
+}
+
+// Deterministic pseudo-random float in the interval [ 0, 1 ]
+function seededRandom( s ) {
+
+	if ( s !== undefined ) _seed = s % 2147483647;
+
+	// Park-Miller algorithm
+
+	_seed = _seed * 16807 % 2147483647;
+
+	return ( _seed - 1 ) / 2147483646;
+
+}
+
+function degToRad( degrees ) {
+
+	return degrees * DEG2RAD;
+
+}
+
+function radToDeg( radians ) {
+
+	return radians * RAD2DEG;
+
+}
+
+function isPowerOfTwo( value ) {
+
+	return ( value & ( value - 1 ) ) === 0 && value !== 0;
+
+}
+
+function ceilPowerOfTwo( value ) {
+
+	return Math.pow( 2, Math.ceil( Math.log( value ) / Math.LN2 ) );
+
+}
+
+function floorPowerOfTwo( value ) {
+
+	return Math.pow( 2, Math.floor( Math.log( value ) / Math.LN2 ) );
+
+}
+
+function setQuaternionFromProperEuler( q, a, b, c, order ) {
+
+	// Intrinsic Proper Euler Angles - see https://en.wikipedia.org/wiki/Euler_angles
+
+	// rotations are applied to the axes in the order specified by 'order'
+	// rotation by angle 'a' is applied first, then by angle 'b', then by angle 'c'
+	// angles are in radians
+
+	const cos = Math.cos;
+	const sin = Math.sin;
+
+	const c2 = cos( b / 2 );
+	const s2 = sin( b / 2 );
+
+	const c13 = cos( ( a + c ) / 2 );
+	const s13 = sin( ( a + c ) / 2 );
+
+	const c1_3 = cos( ( a - c ) / 2 );
+	const s1_3 = sin( ( a - c ) / 2 );
+
+	const c3_1 = cos( ( c - a ) / 2 );
+	const s3_1 = sin( ( c - a ) / 2 );
+
+	switch ( order ) {
+
+		case 'XYX':
+			q.set( c2 * s13, s2 * c1_3, s2 * s1_3, c2 * c13 );
+			break;
+
+		case 'YZY':
+			q.set( s2 * s1_3, c2 * s13, s2 * c1_3, c2 * c13 );
+			break;
+
+		case 'ZXZ':
+			q.set( s2 * c1_3, s2 * s1_3, c2 * s13, c2 * c13 );
+			break;
+
+		case 'XZX':
+			q.set( c2 * s13, s2 * s3_1, s2 * c3_1, c2 * c13 );
+			break;
+
+		case 'YXY':
+			q.set( s2 * c3_1, c2 * s13, s2 * s3_1, c2 * c13 );
+			break;
+
+		case 'ZYZ':
+			q.set( s2 * s3_1, s2 * c3_1, c2 * s13, c2 * c13 );
+			break;
+
+		default:
+			console.warn( 'THREE.MathUtils: .setQuaternionFromProperEuler() encountered an unknown order: ' + order );
+
+	}
+
+}
+
+
+
+
+
+
+
+/***/ }),
+
 /***/ "./src/constants/index.ts":
 /*!********************************!*\
   !*** ./src/constants/index.ts ***!
@@ -1874,7 +2145,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "API_URL": () => (/* binding */ API_URL),
 /* harmony export */   "API_VERSION": () => (/* binding */ API_VERSION),
 /* harmony export */   "DEFAULT_INTERVAL_VALUE": () => (/* binding */ DEFAULT_INTERVAL_VALUE),
-/* harmony export */   "DEFAULT_SESSION_KEEPALIVE_TIME": () => (/* binding */ DEFAULT_SESSION_KEEPALIVE_TIME),
 /* harmony export */   "MAXIMUM_BATCH_RECORDS_LENGTH": () => (/* binding */ MAXIMUM_BATCH_RECORDS_LENGTH),
 /* harmony export */   "MAXIMUM_BATCH_SENDING_INTERVAL": () => (/* binding */ MAXIMUM_BATCH_SENDING_INTERVAL),
 /* harmony export */   "MAXIMUM_SESSION_KEEPALIVE_TIME": () => (/* binding */ MAXIMUM_SESSION_KEEPALIVE_TIME),
@@ -1900,8 +2170,6 @@ const MAXIMUM_BATCH_RECORDS_LENGTH = 20;
 const MAXIMUM_BATCH_SENDING_INTERVAL = 20 * 1000;
 /** Maximum server keepalive time since last successful pull data to the server */
 const MAXIMUM_SESSION_KEEPALIVE_TIME = 5 * 60 * 1000;
-/** Close session after 2 minutes of the user inactivity */
-const DEFAULT_SESSION_KEEPALIVE_TIME = 2 * 60 * 1000;
 
 
 /***/ }),
@@ -2151,6 +2419,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ MetalitixLoggerBase)
 /* harmony export */ });
+/* harmony import */ var three_src_math_MathUtils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! three/src/math/MathUtils */ "./node_modules/three/src/math/MathUtils.js");
 /* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services */ "./src/services/index.ts");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants */ "./src/constants/index.ts");
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types */ "./src/types/index.ts");
@@ -2170,12 +2439,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 class MetalitixLoggerBase {
     constructor(appKey, options = {}) {
-        this.apiVersion = 'v2'; // TODO: update when server side will be updated
         this.interval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE;
         this.customData = {};
-        this.previousData = {};
         this.previousAnimations = {};
         this.cameraOrScene = null;
         this.object3D = null;
@@ -2212,10 +2480,6 @@ class MetalitixLoggerBase {
             const userMeta = this.getUserMeta();
             if (data === undefined) {
                 throw new Error('Data is required field!');
-            }
-            if (!(0,_utils__WEBPACK_IMPORTED_MODULE_3__.deepEqual)(this.previousData, data)) {
-                this.previousData = data;
-                this.previousDataChanged = Date.now();
             }
             const resultData = Object.assign({}, this.customData, data);
             const currentAnimations = this.getAnimationsData();
@@ -2280,7 +2544,7 @@ class MetalitixLoggerBase {
                 yield (0,_services__WEBPACK_IMPORTED_MODULE_0__.sendXRAnalyticsData)(batchRecordsData);
                 this.pollRecords = this.pollRecords.slice(_constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_RECORDS_LENGTH);
                 if (this.pollRecords.length > 0 && sendAll) {
-                    return this.sendPosition(true);
+                    yield this.sendPosition(true);
                 }
                 this.lastPollTimestamp = Date.now();
             }
@@ -2319,7 +2583,7 @@ class MetalitixLoggerBase {
         this.addSessionUpdate = (camera) => __awaiter(this, void 0, void 0, function* () {
             yield this.addRecord(_types__WEBPACK_IMPORTED_MODULE_2__.XRAnalytics.EventTypes.SessionUpdate, { camera });
         });
-        this.addNextUserPositionAndUpdateCameraIfNeeded = () => __awaiter(this, void 0, void 0, function* () {
+        this.sddNextUserPositionAndUpdateCameraIfNeeded = () => __awaiter(this, void 0, void 0, function* () {
             const camera = yield this.getCameraData(this.cameraOrScene);
             if (camera === undefined || (0,_utils__WEBPACK_IMPORTED_MODULE_3__.deepEqual)(camera, this.previousCameraData)) {
                 this.addUserPosition();
@@ -2327,44 +2591,25 @@ class MetalitixLoggerBase {
             else {
                 this.addSessionUpdate(camera);
                 this.previousCameraData = camera;
-                this.previousDataChanged = Date.now();
             }
         });
-        this.sendPositionLoop = (start = false) => __awaiter(this, void 0, void 0, function* () {
-            if (Date.now() - this.previousDataChanged > this.sessionKeepaliveTime) {
-                const camera = yield this.getCameraData(this.cameraOrScene);
-                const data = yield this.getPositionData(this.cameraOrScene, this.object3D);
-                if ((0,_utils__WEBPACK_IMPORTED_MODULE_3__.deepEqual)(data, this.previousData) && (0,_utils__WEBPACK_IMPORTED_MODULE_3__.deepEqual)(camera, this.previousCameraData)) {
-                    if (this.sessionId !== null) {
-                        yield this.addSessionEnd();
-                        yield this.pauseSession();
-                        this.lastPollTimestamp = -1;
-                        this.sessionId = null;
-                    }
-                }
-                else {
-                    this.previousDataChanged = Date.now();
-                    yield this.resumeSession();
-                }
+        this.sendPositionLoop = (start = false) => {
+            /** Don't push position twice on session start */
+            if (!start) {
+                this.sddNextUserPositionAndUpdateCameraIfNeeded();
             }
-            else {
-                /** Don't push position twice on session start */
-                if (!start) {
-                    this.addNextUserPositionAndUpdateCameraIfNeeded();
-                }
-                if (!this.pollInProgress &&
-                    this.pollRecords.length > 0 &&
-                    (this.pollRecords.length >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_RECORDS_LENGTH ||
-                        Date.now() - this.lastPollTimestamp >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_SENDING_INTERVAL)) {
-                    this.sendPosition();
-                }
+            if (!this.pollInProgress &&
+                this.pollRecords.length > 0 &&
+                (this.pollRecords.length >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_RECORDS_LENGTH ||
+                    Date.now() - this.lastPollTimestamp >= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_BATCH_SENDING_INTERVAL)) {
+                this.sendPosition();
             }
-            /** Stop polling data if `this.cameraOrScene` is `null`  session was ended */
-            if (this.cameraOrScene === null && this.sessionId === null) {
+            /** Stop polling data if session was ended and there is nothing to send */
+            if (this.sessionId === null && this.pollRecords.length === 0) {
                 return;
             }
             this.nextPoll = window.setTimeout(() => this.sendPositionLoop(), this.interval);
-        });
+        };
         this.forceStopLoop = () => clearTimeout(this.nextPoll);
         this.clearSessionPollRecords = () => {
             this.pollRecords = [];
@@ -2390,9 +2635,8 @@ class MetalitixLoggerBase {
             }
             this.cameraOrScene = cameraOrScene;
             this.setObject3D(object3D);
-            const { sessionId } = yield (0,_services__WEBPACK_IMPORTED_MODULE_0__.getXRAnalyticsDataStream)(this.appKey);
+            const sessionId = (0,three_src_math_MathUtils__WEBPACK_IMPORTED_MODULE_5__.generateUUID)();
             this.sessionId = sessionId;
-            this.previousDataChanged = Date.now();
             yield this.addSessionStart();
             this.sendPositionLoop(true);
             document.addEventListener('visibilitychange', this.handleVisibilityChange);
@@ -2404,15 +2648,12 @@ class MetalitixLoggerBase {
         this.pauseSession = () => {
             /** If the session was paused we need to send all our data and stop collecting new items */
             this.forceStopLoop();
-            this.stopFPSLoop();
             return this.sendPosition(true);
         };
         this.resumeSession = () => __awaiter(this, void 0, void 0, function* () {
-            if (Date.now() - this.lastPollTimestamp <= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_SESSION_KEEPALIVE_TIME) {
+            if (this.lastPollTimestamp < 0 || Date.now() - this.lastPollTimestamp <= _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_SESSION_KEEPALIVE_TIME) {
                 /** If the session was resumed on time - we need to continue collect current session data */
                 this.forceStopLoop(); // in case if session was not paused
-                this.stopFPSLoop();
-                this.loopFPS();
                 this.sendPositionLoop();
             }
             else if (this.cameraOrScene !== null) {
@@ -2427,19 +2668,14 @@ class MetalitixLoggerBase {
                 /** The session was already ended */
                 return;
             }
-            if (Date.now() - this.lastPollTimestamp < _constants__WEBPACK_IMPORTED_MODULE_1__.MAXIMUM_SESSION_KEEPALIVE_TIME) {
-                /** Don't send record with session end in case if server already close this session */
-                yield this.addSessionEnd();
-            }
+            yield this.addSessionEnd();
             this.cameraOrScene = null;
             this.sessionId = null;
             this.previousCameraData = null;
             this.customData = {};
             this.forceStopLoop();
             this.stopFPSLoop();
-            if (this.pollRecords.length > 0) {
-                yield this.sendPosition(true);
-            }
+            yield this.sendPosition(true);
             this.clearSessionPollRecords();
             this.lastPollTimestamp = -1;
             document.removeEventListener('visibilitychange', this.handleVisibilityChange);
@@ -2598,18 +2834,17 @@ class MetalitixLoggerBase {
             }
             (0,_mtx_engagement_survey__WEBPACK_IMPORTED_MODULE_4__.addSurvey)({ appkey: this.appKey, sessionId: this.sessionId, theme: surveyTheme !== null && surveyTheme !== void 0 ? surveyTheme : this.surveyTheme, force: true });
         };
-        const { pollInterval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE, userMeta = {}, showSurvey = true, surveyTheme, sessionKeepaliveTime = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_SESSION_KEEPALIVE_TIME, } = options;
+        const { pollInterval = _constants__WEBPACK_IMPORTED_MODULE_1__.DEFAULT_INTERVAL_VALUE, apiVersion = 'v2', userMeta = {}, showSurvey = true, surveyTheme, } = options;
         this.appKey = appKey;
+        this.apiVersion = apiVersion;
         this.userMeta = userMeta;
         this.setPollInterval(pollInterval);
-        this.sessionKeepaliveTime = sessionKeepaliveTime;
         this.sessionId = null;
         this.previousCameraData = null;
         this.pollRecords = [];
         this.lastPollTimestamp = -1;
         this.pollInProgress = false;
         this.nextPoll = -1;
-        this.previousDataChanged = Date.now();
         this.pollInProgress = false;
         this.showSurveyAutomatically = showSurvey;
         this.surveyTheme = surveyTheme;
@@ -2635,7 +2870,6 @@ class MetalitixLoggerBase {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getXRAnalyticsDataStream": () => (/* binding */ getXRAnalyticsDataStream),
 /* harmony export */   "sendMetricSurveysData": () => (/* binding */ sendMetricSurveysData),
 /* harmony export */   "sendXRAnalyticsData": () => (/* binding */ sendXRAnalyticsData)
 /* harmony export */ });
@@ -2650,17 +2884,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-function getXRAnalyticsDataStream(appkey, sessionId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch(`${_constants__WEBPACK_IMPORTED_MODULE_0__.API_URL}/xr-analytics/data-stream`, {
-            method: 'POST',
-            keepalive: true,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ appkey, sessionId }),
-        });
-        return response.json();
-    });
-}
 function sendXRAnalyticsData(data) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('poll', data);
