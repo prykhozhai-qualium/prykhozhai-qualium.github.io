@@ -160,7 +160,6 @@
         const container = document.getElementById("container");
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xa0a0a0);
-        scene.fog = new THREE.Fog(0xa0a0a0, 10, 500);
 
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
         hemiLight.position.set(0, 20, 0);
@@ -174,7 +173,7 @@
         dirLight.shadow.camera.left = -2;
         dirLight.shadow.camera.right = 2;
         dirLight.shadow.camera.near = 0.1;
-        dirLight.shadow.camera.far = 100;
+        dirLight.shadow.camera.far = 9999;
         scene.add(dirLight);
 
         // ground
@@ -291,6 +290,7 @@
         const folder1 = panel.addFolder("Animations");
         const folder4 = panel.addFolder("Camera");
         const folder5 = panel.addFolder("Automove");
+        const folderObject = panel.addFolder("Object");
 
         panelSettings = {
           "modify time scale": 1.0,
@@ -299,10 +299,17 @@
           Loop: true,
           "Show camera vectors & positions": false,
           "Camera controls": "Orbit",
+          Scale: 0,
           Automove: false,
           AutomoveScaleFactor: 0.1,
           AutomoveMaxDistance: 500,
         };
+
+        folderObject
+          .add(panelSettings, "Scale", 0.0, 1000, 0.01)
+          .onChange((scale) => {
+            model.scale.set(scale, scale, scale);
+          });
 
         const baseNames = ["None", ...Object.keys(baseActions)];
 
