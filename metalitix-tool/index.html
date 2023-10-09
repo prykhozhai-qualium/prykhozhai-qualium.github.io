@@ -300,6 +300,9 @@
           "Show camera vectors & positions": false,
           "Camera controls": "Orbit",
           Scale: 0,
+          "Position X": 0,
+          "Position Y": 0,
+          "Position Z": 0,
           Automove: false,
           AutomoveScaleFactor: 0.1,
           AutomoveMaxDistance: 500,
@@ -309,6 +312,24 @@
           .add(panelSettings, "Scale", 0.0, 1000, 0.01)
           .onChange((scale) => {
             model.scale.set(scale, scale, scale);
+          });
+
+        folderObject
+          .add(panelSettings, "Position X", -1000, 1000, 0.01)
+          .onChange((x) => {
+            model.position.x = x;
+          });
+
+        folderObject
+          .add(panelSettings, "Position Y", -1000, 1000, 0.01)
+          .onChange((y) => {
+            model.position.y = y;
+          });
+
+        folderObject
+          .add(panelSettings, "Position Z", -1000, 1000, 0.01)
+          .onChange((z) => {
+            model.position.z = z;
           });
 
         const baseNames = ["None", ...Object.keys(baseActions)];
