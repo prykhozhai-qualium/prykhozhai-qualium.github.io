@@ -303,6 +303,9 @@
           "Position X": 0,
           "Position Y": 0,
           "Position Z": 0,
+          "Rotation X": 0,
+          "Rotation Y": 0,
+          "Rotation Z": 0,
           Automove: false,
           AutomoveScaleFactor: 0.1,
           AutomoveMaxDistance: 500,
@@ -330,6 +333,24 @@
           .add(panelSettings, "Position Z", -1000, 1000, 0.01)
           .onChange((z) => {
             model.position.z = z;
+          });
+
+          folderObject
+          .add(panelSettings, "Rotation X", -1000, 1000, 0.01)
+          .onChange((x) => {
+            model.rotation.x = x;
+          });
+
+        folderObject
+          .add(panelSettings, "Rotation Y", -1000, 1000, 0.01)
+          .onChange((y) => {
+            model.rotation.y = y;
+          });
+
+        folderObject
+          .add(panelSettings, "Rotation Z", -1000, 1000, 0.01)
+          .onChange((z) => {
+            model.rotation.z = z;
           });
 
         const baseNames = ["None", ...Object.keys(baseActions)];
