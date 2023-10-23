@@ -47,17 +47,15 @@
       let direct = getParameterByName("direct");
 
       let load = document.getElementById("load");
-      let path = "./dist/dev/mtx-poll-three-js.js";
+      let path;
 
       if (direct == "s") {
-        path = "./dist/staging/mtx-poll-three-js.js";
+        path = "./dist/staging/three-js/three-js.js";
       } else if (direct == "p") {
-        path = "./dist/mtx-poll-three-js.js";
+        path = "./dist/prod/three-js/three-js.js";
       } else {
-        path = "./dist/dev/mtx-poll-three-js.js";
+        path = "./dist/dev/three-js/three-js.js";
       }
-
-      console.log(path);
 
       newScript = document.createElement("script");
       newScript.type = "text/javascript";
@@ -291,10 +289,25 @@
         const folder4 = panel.addFolder("Camera");
         const folder5 = panel.addFolder("Automove");
         const folderObject = panel.addFolder("Object");
+        const folderLogState = panel.addFolder("LogState");
+        const folderLogEvent = panel.addFolder("LogEvent");
+        const folderSetAttribute = panel.addFolder("Attribute");
 
         panelSettings = {
           "modify time scale": 1.0,
           ApiKey: "",
+          StartSession: () => {
+            CreateLogger(camera, panelSettings.ApiKey);
+          },
+          PauseSession: () => {
+            logger.pauseSession();
+          },
+          ResumeSession: () => {
+            logger.resumeSession();
+          },
+          EndSession: () => {
+            logger.endSession();
+          },
           updateSpeed: 500,
           Loop: true,
           "Show camera vectors & positions": false,
@@ -309,7 +322,37 @@
           Automove: false,
           AutomoveScaleFactor: 0.1,
           AutomoveMaxDistance: 500,
+          eventName: "",
+          eventGroupName: "",
+          logEvent: () => {
+            logger.logEvent(
+              panelSettings.eventGroupName,
+              panelSettings.eventName
+            );
+          },
+          stateName: "",
+          stateValue: "",
+          logState: () => {
+            logger.logState(panelSettings.stateName, panelSettings.stateValue);
+          },
+          attrKey: "",
+          attrValue: "",
+          setAttribute: () => {
+            logger.setAttribute(panelSettings.attrKey, panelSettings.attrValue);
+          },
         };
+
+        folderLogEvent.add(panelSettings, "eventName");
+        folderLogEvent.add(panelSettings, "eventGroupName");
+        folderLogEvent.add(panelSettings, "logEvent");
+
+        folderLogState.add(panelSettings, "stateName");
+        folderLogState.add(panelSettings, "stateValue");
+        folderLogState.add(panelSettings, "logState");
+
+        folderSetAttribute.add(panelSettings, "attrKey");
+        folderSetAttribute.add(panelSettings, "attrValue");
+        folderSetAttribute.add(panelSettings, "setAttribute");
 
         folderObject
           .add(panelSettings, "Scale", 0.0, 1000, 0.01)
@@ -335,7 +378,7 @@
             model.position.z = z;
           });
 
-          folderObject
+        folderObject
           .add(panelSettings, "Rotation X", -1000, 1000, 0.01)
           .onChange((x) => {
             model.rotation.x = x;
@@ -417,14 +460,17 @@
             }
           }
 
-        let api_controller = folder2
-          .add(panelSettings, "ApiKey")
-          .onChange((value) => {
-            CreateLogger(camera, value);
-          });
+        //CreateLogger(camera, value);
+
+        let api_controller = folder2.add(panelSettings, "ApiKey");
         folder2
           .add(panelSettings, "updateSpeed", 100, 5000)
           .name("Update speed (ms)");
+
+        folder2.add(panelSettings, "StartSession");
+        folder2.add(panelSettings, "PauseSession");
+        folder2.add(panelSettings, "ResumeSession");
+        folder2.add(panelSettings, "EndSession");
         folder2.add(panelSettings, "Loop").name("Is animation loop on");
         folder4.add(panelSettings, "Show camera vectors & positions");
         folder4

@@ -1,0 +1,1876 @@
+/*!
+ * Platform.js v1.3.6
+ * Copyright 2014-2020 Benjamin Tan
+ * Copyright 2011-2013 John-David Dalton
+ * Available under MIT license
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+/*! ../../fixtures/regexes/device/mobiles.json */
+
+/*! ../../utils/model */
+
+/*! ../../utils/user-agent */
+
+/*! ../../utils/variable-replacement */
+
+/*! ../constants */
+
+/*! ../debug */
+
+/*! ../isIpAddress */
+
+/*! ../isValidHostLabel */
+
+/*! ../lib */
+
+/*! ../models/KinesisServiceException */
+
+/*! ../models/models_0 */
+
+/*! ../package.json */
+
+/*! ../protocols/Aws_json1_1 */
+
+/*! ../service-customizations */
+
+/*! ../services */
+
+/*! ../types */
+
+/*! ../utils */
+
+/*! ./AdaptiveRetryStrategy */
+
+/*! ./AnonymousIdentity */
+
+/*! ./AwsCredentialIdentity */
+
+/*! ./CredentialsProviderError */
+
+/*! ./CryptoOperation */
+
+/*! ./DefaultRateLimiter */
+
+/*! ./EndpointError */
+
+/*! ./EndpointRuleObject */
+
+/*! ./ErrorRuleObject */
+
+/*! ./EventStreamCodec */
+
+/*! ./EventStreamMarshaller */
+
+/*! ./EventStreamSerdeConfig */
+
+/*! ./HeaderMarshaller */
+
+/*! ./Identity */
+
+/*! ./Int64 */
+
+/*! ./Key */
+
+/*! ./KeyOperation */
+
+/*! ./KinesisServiceException */
+
+/*! ./LoginIdentity */
+
+/*! ./MathUtils.js */
+
+/*! ./Matrix4.js */
+
+/*! ./Message */
+
+/*! ./MiddlewareStack */
+
+/*! ./MsSubtleCrypto */
+
+/*! ./MsWindow */
+
+/*! ./NoOpLogger */
+
+/*! ./NodeUseDualstackEndpointConfigOptions */
+
+/*! ./NodeUseFipsEndpointConfigOptions */
+
+/*! ./PartitionHash */
+
+/*! ./ProviderError */
+
+/*! ./Quaternion.js */
+
+/*! ./RawSha256 */
+
+/*! ./RegionHash */
+
+/*! ./RuleSetObject */
+
+/*! ./SignatureV4 */
+
+/*! ./StandardRetryStrategy */
+
+/*! ./TokenIdentity */
+
+/*! ./TokenProviderError */
+
+/*! ./TreeRuleObject */
+
+/*! ./Vector3.js */
+
+/*! ./abort */
+
+/*! ./adaptors */
+
+/*! ./adaptors/getEndpointFromInstructions */
+
+/*! ./adaptors/toEndpointV1 */
+
+/*! ./auth */
+
+/*! ./aws */
+
+/*! ./aws_crc32 */
+
+/*! ./booleanEquals */
+
+/*! ./booleanSelector */
+
+/*! ./calculateBodyLength */
+
+/*! ./callFunction */
+
+/*! ./chain */
+
+/*! ./checksum */
+
+/*! ./client */
+
+/*! ./cloneRequest */
+
+/*! ./command */
+
+/*! ./config */
+
+/*! ./configurations */
+
+/*! ./constants */
+
+/*! ./constants.browser */
+
+/*! ./convertToBuffer */
+
+/*! ./createConfigValueProvider */
+
+/*! ./credentialDerivation */
+
+/*! ./credentials */
+
+/*! ./crossPlatformSha256 */
+
+/*! ./crypto */
+
+/*! ./date-utils */
+
+/*! ./debug */
+
+/*! ./debugId */
+
+/*! ./default-error-handler */
+
+/*! ./defaultRetryBackoffStrategy */
+
+/*! ./defaultRetryQuota */
+
+/*! ./defaultRetryToken */
+
+/*! ./defaults-mode */
+
+/*! ./delayDecider */
+
+/*! ./deserializerMiddleware */
+
+/*! ./emitWarningIfUnsupportedVersion */
+
+/*! ./endpoint */
+
+/*! ./endpoint/EndpointParameters */
+
+/*! ./endpoint/endpointResolver */
+
+/*! ./endpointMiddleware */
+
+/*! ./endpointsConfig */
+
+/*! ./escape-uri */
+
+/*! ./escape-uri-path */
+
+/*! ./evaluateCondition */
+
+/*! ./evaluateConditions */
+
+/*! ./evaluateEndpointRule */
+
+/*! ./evaluateErrorRule */
+
+/*! ./evaluateExpression */
+
+/*! ./evaluateRules */
+
+/*! ./evaluateTemplate */
+
+/*! ./evaluateTreeRule */
+
+/*! ./eventStream */
+
+/*! ./exceptions */
+
+/*! ./extended-encode-uri-component */
+
+/*! ./fetch-http-handler */
+
+/*! ./fromBase64 */
+
+/*! ./fromStatic */
+
+/*! ./get-array-if-single-item */
+
+/*! ./get-value-from-text-node */
+
+/*! ./getAttr */
+
+/*! ./getAttrPathList */
+
+/*! ./getCanonicalHeaders */
+
+/*! ./getCanonicalQuery */
+
+/*! ./getChunkedStream */
+
+/*! ./getEndpointFromInstructions */
+
+/*! ./getEndpointHeaders */
+
+/*! ./getEndpointPlugin */
+
+/*! ./getEndpointProperties */
+
+/*! ./getEndpointProperty */
+
+/*! ./getEndpointUrl */
+
+/*! ./getHostnameFromVariants */
+
+/*! ./getPayloadHash */
+
+/*! ./getRealRegion */
+
+/*! ./getReferenceValue */
+
+/*! ./getRegionInfo */
+
+/*! ./getResolvedHostname */
+
+/*! ./getResolvedPartition */
+
+/*! ./getResolvedSigningRegion */
+
+/*! ./getSkewCorrectedDate */
+
+/*! ./getUnmarshalledStream */
+
+/*! ./headerUtil */
+
+/*! ./http */
+
+/*! ./httpHandler */
+
+/*! ./httpRequest */
+
+/*! ./httpResponse */
+
+/*! ./identity */
+
+/*! ./ie11Sha256 */
+
+/*! ./index */
+
+/*! ./invalidFunction */
+
+/*! ./invalidProvider */
+
+/*! ./isClockSkewed */
+
+/*! ./isEmptyData */
+
+/*! ./isFipsRegion */
+
+/*! ./isIpAddress */
+
+/*! ./isSet */
+
+/*! ./isValidHostLabel */
+
+/*! ./isValidHostname */
+
+/*! ./isVirtualHostableS3Bucket */
+
+/*! ./jsSha256 */
+
+/*! ./lazy-json */
+
+/*! ./lib/aws/partition */
+
+/*! ./logger */
+
+/*! ./loggerMiddleware */
+
+/*! ./memoize */
+
+/*! ./memory-cache */
+
+/*! ./middleware */
+
+/*! ./moveHeadersToQuery */
+
+/*! ./mtx-data-stream */
+
+/*! ./mtx-engagement-survey */
+
+/*! ./mtx-poll-base */
+
+/*! ./normalizeProvider */
+
+/*! ./not */
+
+/*! ./numToUint8 */
+
+/*! ./object-mapping */
+
+/*! ./omitRetryHeadersMiddleware */
+
+/*! ./pagination */
+
+/*! ./parse-utils */
+
+/*! ./parseArn */
+
+/*! ./parseURL */
+
+/*! ./partition */
+
+/*! ./partitions.json */
+
+/*! ./prepareRequest */
+
+/*! ./profile */
+
+/*! ./provider */
+
+/*! ./pureJs */
+
+/*! ./regex.js */
+
+/*! ./regionConfig */
+
+/*! ./regionInfo */
+
+/*! ./request-timeout */
+
+/*! ./resolve-path */
+
+/*! ./resolveCustomEndpointsConfig */
+
+/*! ./resolveDefaultsModeConfig */
+
+/*! ./resolveEndpoint */
+
+/*! ./resolveEndpointConfig */
+
+/*! ./resolveEndpointsConfig */
+
+/*! ./resolveRegionConfig */
+
+/*! ./response */
+
+/*! ./retry */
+
+/*! ./retryDecider */
+
+/*! ./retryMiddleware */
+
+/*! ./rng.js */
+
+/*! ./ruleset */
+
+/*! ./runtimeConfig */
+
+/*! ./runtimeConfig.shared */
+
+/*! ./s3 */
+
+/*! ./ser-utils */
+
+/*! ./serde */
+
+/*! ./serdePlugin */
+
+/*! ./serializerMiddleware */
+
+/*! ./shapes */
+
+/*! ./shared */
+
+/*! ./signature */
+
+/*! ./split-every */
+
+/*! ./splitMessage */
+
+/*! ./stream */
+
+/*! ./stream-collector */
+
+/*! ./stringEquals */
+
+/*! ./stringify.js */
+
+/*! ./substring */
+
+/*! ./supportsWebCrypto */
+
+/*! ./toBase64 */
+
+/*! ./toDebugString */
+
+/*! ./toEndpointV1 */
+
+/*! ./token */
+
+/*! ./transfer */
+
+/*! ./types */
+
+/*! ./uint32ArrayFrom */
+
+/*! ./uriEncode */
+
+/*! ./user-agent-middleware */
+
+/*! ./util */
+
+/*! ./utilDate */
+
+/*! ./utils */
+
+/*! ./utils/getEndpointFromRegion */
+
+/*! ./utils/getSkewCorrectedDate */
+
+/*! ./utils/getUpdatedSystemClockOffset */
+
+/*! ./validate.js */
+
+/*! ./waiter */
+
+/*! ./webCryptoSha256 */
+
+/*! ./whatwgEncodingApi */
+
+/*! @aws-crypto/crc32 */
+
+/*! @aws-crypto/ie11-detection */
+
+/*! @aws-crypto/sha256-browser */
+
+/*! @aws-crypto/sha256-js */
+
+/*! @aws-crypto/supports-web-crypto */
+
+/*! @aws-crypto/util */
+
+/*! @aws-sdk/client-kinesis */
+
+/*! @aws-sdk/config-resolver */
+
+/*! @aws-sdk/eventstream-codec */
+
+/*! @aws-sdk/eventstream-serde-browser */
+
+/*! @aws-sdk/eventstream-serde-config-resolver */
+
+/*! @aws-sdk/eventstream-serde-universal */
+
+/*! @aws-sdk/fetch-http-handler */
+
+/*! @aws-sdk/invalid-dependency */
+
+/*! @aws-sdk/is-array-buffer */
+
+/*! @aws-sdk/middleware-content-length */
+
+/*! @aws-sdk/middleware-endpoint */
+
+/*! @aws-sdk/middleware-host-header */
+
+/*! @aws-sdk/middleware-logger */
+
+/*! @aws-sdk/middleware-recursion-detection */
+
+/*! @aws-sdk/middleware-retry */
+
+/*! @aws-sdk/middleware-serde */
+
+/*! @aws-sdk/middleware-signing */
+
+/*! @aws-sdk/middleware-stack */
+
+/*! @aws-sdk/middleware-user-agent */
+
+/*! @aws-sdk/property-provider */
+
+/*! @aws-sdk/protocol-http */
+
+/*! @aws-sdk/querystring-builder */
+
+/*! @aws-sdk/querystring-parser */
+
+/*! @aws-sdk/service-error-classification */
+
+/*! @aws-sdk/signature-v4 */
+
+/*! @aws-sdk/smithy-client */
+
+/*! @aws-sdk/types */
+
+/*! @aws-sdk/url-parser */
+
+/*! @aws-sdk/util-base64 */
+
+/*! @aws-sdk/util-body-length-browser */
+
+/*! @aws-sdk/util-config-provider */
+
+/*! @aws-sdk/util-defaults-mode-browser */
+
+/*! @aws-sdk/util-endpoints */
+
+/*! @aws-sdk/util-hex-encoding */
+
+/*! @aws-sdk/util-locate-window */
+
+/*! @aws-sdk/util-middleware */
+
+/*! @aws-sdk/util-retry */
+
+/*! @aws-sdk/util-uri-escape */
+
+/*! @aws-sdk/util-user-agent-browser */
+
+/*! @aws-sdk/util-utf8-browser */
+
+/*! base64-js */
+
+/*! bowser */
+
+/*! browser-crypto */
+
+/*! buffer */
+
+/*! device-detector-js/dist/parsers/device/mobiles */
+
+/*! ieee754 */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! platform */
+
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! three/src/constants */
+
+/*! three/src/math/Euler */
+
+/*! three/src/math/Quaternion */
+
+/*! three/src/math/Vector3 */
+
+/*! tslib */
+
+/*! uuid */
+
+/*!****************************!*\
+  !*** ./src/types/index.ts ***!
+  \****************************/
+
+/*!****************************!*\
+  !*** ./src/utils/index.ts ***!
+  \****************************/
+
+/*!*******************************!*\
+  !*** ./src/services/index.ts ***!
+  \*******************************/
+
+/*!********************************!*\
+  !*** ./src/constants/index.ts ***!
+  \********************************/
+
+/*!**********************************!*\
+  !*** ./src/lib/mtx-poll-base.ts ***!
+  \**********************************/
+
+/*!************************************!*\
+  !*** ./node_modules/bowser/es5.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./src/lib/mtx-data-stream.ts ***!
+  \************************************/
+
+/*!**************************************!*\
+  !*** ./node_modules/buffer/index.js ***!
+  \**************************************/
+
+/*!**************************************!*\
+  !*** ./src/lib/mtx-poll-three-js.ts ***!
+  \**************************************/
+
+/*!***************************************!*\
+  !*** ./node_modules/ieee754/index.js ***!
+  \***************************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/base64-js/index.js ***!
+  \*****************************************/
+
+/*!******************************************!*\
+  !*** ./src/lib/mtx-engagement-survey.ts ***!
+  \******************************************/
+
+/*!*******************************************!*\
+  !*** ./node_modules/platform/platform.js ***!
+  \*******************************************/
+
+/*!*********************************************!*\
+  !*** ./node_modules/three/src/constants.js ***!
+  \*********************************************/
+
+/*!**********************************************!*\
+  !*** ./node_modules/three/src/math/Euler.js ***!
+  \**********************************************/
+
+/*!************************************************!*\
+  !*** ./node_modules/three/src/math/Matrix4.js ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./node_modules/three/src/math/Vector3.js ***!
+  \************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/three/src/math/MathUtils.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/v4.js ***!
+  \**************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/browser-crypto/dist/index.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/three/src/math/Quaternion.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/rng.js ***!
+  \***************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/auth.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/http.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/util.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/regex.js ***!
+  \*****************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-crypto/util/build/index.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/abort.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/index.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/retry.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/serde.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/token.js ***!
+  \******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-crypto/crc32/build/index.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/client.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/crypto.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/logger.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/shapes.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/stream.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/waiter.js ***!
+  \*******************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/command.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/profile.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/validate.js ***!
+  \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/checksum.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/endpoint.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/response.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/transfer.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/uuid/dist/esm-browser/stringify.js ***!
+  \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/signature.js ***!
+  \**********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-crypto/crc32/build/aws_crc32.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-js/build/index.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-crypto/util/build/numToUint8.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/package.json ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/middleware.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/pagination.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/url-parser/dist-es/index.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/index.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/types.js ***!
+  \***********************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/@aws-crypto/util/build/isEmptyData.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/credentials.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/eventStream.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-base64/dist-es/index.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/config.js ***!
+  \************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/index.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/utils/model.js ***!
+  \*************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/Key.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-js/build/jsSha256.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/@aws-sdk/protocol-http/dist-es/index.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/index.js ***!
+  \**************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-js/build/RawSha256.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-js/build/constants.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/client.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/index.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/index.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/constants.js ***!
+  \***************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-crypto/util/build/convertToBuffer.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-crypto/util/build/uint32ArrayFrom.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/is-array-buffer/dist-es/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/util.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/utilDate.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/command.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-middleware/dist-es/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-uri-escape/dist-es/index.js ***!
+  \****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/index.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-serde/dist-es/index.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-stack/dist-es/index.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/constants.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/not.js ***!
+  \*****************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/Int64.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/index.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-logger/dist-es/index.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/chain.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/index.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/headerUtil.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/constants.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/lazy-json.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/ser-utils.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/Identity.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-hex-encoding/dist-es/index.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-utf8-browser/dist-es/index.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/utils/user-agent.js ***!
+  \******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/MsWindow.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/fetch-http-handler/dist-es/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/invalid-dependency/dist-es/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/querystring-parser/dist-es/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/SignatureV4.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/NoOpLogger.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/date-utils.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/exceptions.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/isSet.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-locate-window/dist-es/index.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-utf8-browser/dist-es/pureJs.js ***!
+  \*******************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/constants.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/Message.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/index.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/types.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/memoize.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/protocol-http/dist-es/httpHandler.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/protocol-http/dist-es/httpRequest.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/querystring-builder/dist-es/index.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/cloneRequest.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/parse-utils.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/split-every.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/utils/memory-cache.js ***!
+  \********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/ie11Sha256.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-crypto/supports-web-crypto/build/index.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/protocol-http/dist-es/httpResponse.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/resolve-path.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-config-provider/dist-es/index.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/debug/index.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/getAttr.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/index.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/index.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-uri-escape/dist-es/escape-uri.js ***!
+  \*********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/isEmptyData.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-user-agent/dist-es/index.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/getPayloadHash.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/prepareRequest.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/defaults-mode.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/parseURL.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/shared.js ***!
+  \**********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/KeyOperation.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/KinesisClient.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-host-header/dist-es/index.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-serde/dist-es/serdePlugin.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/fromStatic.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/object-mapping.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/LoginIdentity.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/TokenIdentity.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-base64/dist-es/toBase64.browser.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/debug/debugId.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/aws/index.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/substring.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/uriEncode.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/defaultRetryToken.js ***!
+  \***********************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/crc32/node_modules/tslib/tslib.es6.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/delayDecider.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/retryDecider.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/middleware.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/protocol-http/dist-es/isValidHostname.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-base64/dist-es/constants.browser.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/DefaultRateLimiter.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-user-agent-browser/dist-es/index.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/parsers/device/mobiles.js ***!
+  \************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/MsSubtleCrypto.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/models/models_0.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/splitMessage.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/getCanonicalQuery.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-base64/dist-es/fromBase64.browser.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-body-length-browser/dist-es/index.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/isIpAddress.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/resolveEndpoint.js ***!
+  \*************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/build/CryptoOperation.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/webCryptoSha256.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/endpoint/ruleset.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-browser/dist-es/index.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-browser/dist-es/utils.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-content-length/dist-es/index.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/configurations.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-user-agent/dist-es/constants.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/ProviderError.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/moveHeadersToQuery.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/aws/parseArn.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/stringEquals.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-uri-escape/dist-es/escape-uri-path.js ***!
+  \**************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/index.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/retryMiddleware.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-stack/dist-es/MiddlewareStack.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/getCanonicalHeaders.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/AnonymousIdentity.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-defaults-mode-browser/dist-es/index.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/aws/partition.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/booleanEquals.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/AdaptiveRetryStrategy.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/StandardRetryStrategy.js ***!
+  \***************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-js/node_modules/tslib/tslib.es6.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-universal/dist-es/index.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/configurations.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/signature-v4/dist-es/credentialDerivation.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/callFunction.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-middleware/dist-es/normalizeProvider.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/utils/variable-replacement.js ***!
+  \****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionConfig/index.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/EventStreamCodec.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-codec/dist-es/HeaderMarshaller.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-browser/dist-es/provider.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/fetch-http-handler/dist-es/request-timeout.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/invalid-dependency/dist-es/invalidFunction.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/invalid-dependency/dist-es/invalidProvider.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/adaptors/index.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-logger/dist-es/loggerMiddleware.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/defaultRetryQuota.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/service-error-classification/dist-es/index.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/debug/toDebugString.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/getAttrPathList.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/EndpointError.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/RuleSetObject.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateRules.js ***!
+  \*****************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/build/crossPlatformSha256.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/runtimeConfig.shared.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionConfig/config.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/fetch-http-handler/dist-es/stream-collector.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/default-error-handler.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/aws/partitions.json ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/isValidHostLabel.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/TreeRuleObject.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/getEndpointUrl.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-utf8-browser/dist-es/whatwgEncodingApi.js ***!
+  \******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/protocols/Aws_json1_1.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/runtimeConfig.browser.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-universal/dist-es/provider.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-recursion-detection/dist-es/index.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-user-agent/dist-es/configurations.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/TokenProviderError.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/types/dist-es/identity/AwsCredentialIdentity.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-config-provider/dist-es/booleanSelector.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-defaults-mode-browser/dist-es/constants.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/ErrorRuleObject.js ***!
+  \*******************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/index.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/RegionHash.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/fetch-http-handler/dist-es/fetch-http-handler.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/getEndpointPlugin.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-serde/dist-es/serializerMiddleware.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateTemplate.js ***!
+  \********************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateTreeRule.js ***!
+  \********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/ie11-detection/node_modules/tslib/tslib.es6.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/sha256-browser/node_modules/tslib/tslib.es6.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/supports-web-crypto/build/supportsWebCrypto.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/endpointMiddleware.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/AdaptiveRetryStrategy.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/StandardRetryStrategy.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/utils/isClockSkewed.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/service-error-classification/dist-es/constants.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/get-array-if-single-item.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/get-value-from-text-node.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateCondition.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateErrorRule.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/getReferenceValue.js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-retry/dist-es/defaultRetryBackoffStrategy.js ***!
+  \*********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-config-resolver/dist-es/index.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-serde/dist-es/deserializerMiddleware.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/types/EndpointRuleObject.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateConditions.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateExpression.js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/getEndpointHeaders.js ***!
+  \**********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/endpoint/endpointResolver.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/PartitionHash.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/getRegionInfo.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/getEndpointProperty.js ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./node_modules/device-detector-js/dist/fixtures/regexes/device/mobiles.json ***!
+  \***********************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/commands/PutRecordsCommand.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionConfig/isFipsRegion.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/adaptors/toEndpointV1.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/resolveEndpointConfig.js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/evaluateEndpointRule.js ***!
+  \************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/endpoint/EndpointParameters.js ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionConfig/getRealRegion.js ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/property-provider/dist-es/CredentialsProviderError.js ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/utils/getEndpointProperties.js ***!
+  \*************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@aws-crypto/supports-web-crypto/node_modules/tslib/tslib.es6.js ***!
+  \**************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-retry/dist-es/omitRetryHeadersMiddleware.js ***!
+  \**************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-user-agent/dist-es/user-agent-middleware.js ***!
+  \**************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/extended-encode-uri-component.js ***!
+  \**************************************************************************************/
+
+/*!***************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-universal/dist-es/getChunkedStream.js ***!
+  \***************************************************************************************/
+
+/*!***************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-body-length-browser/dist-es/calculateBodyLength.js ***!
+  \***************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/client-kinesis/dist-es/models/KinesisServiceException.js ***!
+  \****************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/service-customizations/s3.js ***!
+  \****************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/utils/getSkewCorrectedDate.js ***!
+  \****************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/smithy-client/dist-es/emitWarningIfUnsupportedVersion.js ***!
+  \****************************************************************************************/
+
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/getResolvedHostname.js ***!
+  \*****************************************************************************************/
+
+/*!******************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/getResolvedPartition.js ***!
+  \******************************************************************************************/
+
+/*!******************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-browser/dist-es/EventStreamMarshaller.js ***!
+  \******************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionConfig/resolveRegionConfig.js ***!
+  \*******************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/service-customizations/index.js ***!
+  \*******************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-endpoints/dist-es/lib/aws/isVirtualHostableS3Bucket.js ***!
+  \*******************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-universal/dist-es/EventStreamMarshaller.js ***!
+  \********************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-universal/dist-es/getUnmarshalledStream.js ***!
+  \********************************************************************************************/
+
+/*!*********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/getHostnameFromVariants.js ***!
+  \*********************************************************************************************/
+
+/*!**********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/regionInfo/getResolvedSigningRegion.js ***!
+  \**********************************************************************************************/
+
+/*!***********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-signing/dist-es/utils/getUpdatedSystemClockOffset.js ***!
+  \***********************************************************************************************/
+
+/*!***********************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/util-defaults-mode-browser/dist-es/resolveDefaultsModeConfig.js ***!
+  \***********************************************************************************************/
+
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/resolveEndpointsConfig.js ***!
+  \*************************************************************************************************/
+
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/adaptors/createConfigValueProvider.js ***!
+  \*************************************************************************************************/
+
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/eventstream-serde-config-resolver/dist-es/EventStreamSerdeConfig.js ***!
+  \***************************************************************************************************/
+
+/*!***************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/middleware-endpoint/dist-es/adaptors/getEndpointFromInstructions.js ***!
+  \***************************************************************************************************/
+
+/*!******************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/utils/getEndpointFromRegion.js ***!
+  \******************************************************************************************************/
+
+/*!*******************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/resolveCustomEndpointsConfig.js ***!
+  \*******************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/NodeUseFipsEndpointConfigOptions.js ***!
+  \***********************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./node_modules/@aws-sdk/config-resolver/dist-es/endpointsConfig/NodeUseDualstackEndpointConfigOptions.js ***!
+  \****************************************************************************************************************/
