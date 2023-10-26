@@ -115,12 +115,17 @@
       const camera_rotation_e = new Euler();
       const q = new Quaternion();
 
+      let scene, renderer, camera, stats;
+      let model, skeleton, mixer;
+      let panelSettings, numAnimations, currentAction, GLTF;
+
       const CreateLogger = (object3D, appKey) => {
         if (logger) return;
 
         let data = {
           pollInterval: panelSettings.updateSpeed,
           apiVersion: "v2",
+          surveyLogo: undefined,
           userMeta: {
             sceneName: "Scene name",
             gameLocation: "Game location name",
@@ -133,7 +138,6 @@
 
         logger = new MetalitixLogger(panelSettings.ApiKey, data);
 
-        logger.startSession(object3D);
         animation_state.animations = [];
 
         allActions.forEach((action) => {
@@ -142,9 +146,6 @@
           action.time = 0;
         });
       };
-      let scene, renderer, camera, stats;
-      let model, skeleton, mixer;
-      let panelSettings, numAnimations, currentAction, GLTF;
 
       const crossFadeControls = [];
 
@@ -298,6 +299,7 @@
           ApiKey: "",
           StartSession: () => {
             CreateLogger(camera, panelSettings.ApiKey);
+            logger.startSession(camera);
           },
           PauseSession: () => {
             logger.pauseSession();
@@ -459,8 +461,6 @@
               check();
             }
           }
-
-        //CreateLogger(camera, value);
 
         let api_controller = folder2.add(panelSettings, "ApiKey");
         folder2
