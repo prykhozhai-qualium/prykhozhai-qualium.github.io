@@ -47,15 +47,15 @@
       let direct = getParameterByName("direct");
 
       let load = document.getElementById("load");
-      let path;
+      let path = "./logger/three-js.js";
 
-      if (direct == "s") {
-        path = "./dist/staging/three-js/three-js.js";
-      } else if (direct == "p") {
-        path = "./dist/prod/three-js/three-js.js";
-      } else {
-        path = "./dist/dev/three-js/three-js.js";
-      }
+      // if (direct == "s") {
+      //   path = "./dist/staging/three-js/three-js.js";
+      // } else if (direct == "p") {
+      //   path = "./dist/prod/three-js/three-js.js";
+      // } else {
+      //   path = "./dist/dev/three-js/three-js.js";
+      // }
 
       newScript = document.createElement("script");
       newScript.type = "text/javascript";
@@ -141,7 +141,7 @@
         animation_state.animations = [];
 
         allActions.forEach((action) => {
-          logger.setAnimation(action);
+          logger.addAnimation(action);
           action.enabled = false;
           action.time = 0;
         });
