@@ -47,15 +47,15 @@
       let direct = getParameterByName("direct");
 
       let load = document.getElementById("load");
-      let path = "./logger/three-js.js";
+      let path = "";
 
-      // if (direct == "s") {
-      //   path = "./dist/staging/three-js/three-js.js";
-      // } else if (direct == "p") {
-      //   path = "./dist/prod/three-js/three-js.js";
-      // } else {
-      //   path = "./dist/dev/three-js/three-js.js";
-      // }
+      if (direct == "s") {
+        path = "./logger/staging/three-js.js";
+      } else if (direct == "p") {
+        path = "./logger/prod/three-js.js";
+      } else {
+        path = "./logger/dev/three-js.js";
+      }
 
       newScript = document.createElement("script");
       newScript.type = "text/javascript";
@@ -125,8 +125,10 @@
         let data = {
           pollInterval: panelSettings.updateSpeed,
           apiVersion: "v2",
-          surveyLogo: undefined,
-          clientIPAddress: '101.167.175.255',
+          surveyLogo: "./assets/Brand-marks-1.webp",
+          surveyMinInterval: 1,
+          surveyMaxInterval: 10,
+          clientIPAddress: "101.167.175.255",
           userMeta: {
             sceneName: "Scene name",
             gameLocation: "Game location name",
