@@ -1,5 +1,5 @@
 {
-  "gltf": "./assets/Object.gltf",
+  "gltf": "./assets/BadgerIdle.glb",
   "target": "./assets/targets.mind",
   "contacts": ["./assets/contacts/contact-1.vcf"]
 }
